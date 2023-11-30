@@ -1,6 +1,15 @@
-# blockly-vue3
+# investec-blockly
 
-This template should help get you started developing with Vue 3 in Vite.
+A basic example of blockly with blocks created specifically for Investec programmable card.
+
+Blocks available:
+- `before transaction` - creates the beforeTransaction function
+- `after transaction` - creates the afterTransaction function
+- `after decline` - creates the afterDecline function
+- `authorization` - the fields avaialble from the authorization object
+- `transaction` - the fields available from the transaction object
+- `log` - creates a log statment
+- `approve` - creates a return transaction for the beforeTransaction function
 
 ## Recommended IDE Setup
 
