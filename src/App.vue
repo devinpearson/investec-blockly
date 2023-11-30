@@ -56,16 +56,20 @@ const options = {
         },
         {
           "kind": "block",
+          "type": "investec_trans_value"
+        },
+        {
+          "kind": "block",
           "type": "investec_console_log"
         },
         {
           "kind": "block",
           "type": "investec_before_transaction_return"
-        },
-        {
-          "kind": "block",
-          "type": "investec_init"
         }
+        // {
+        //   "kind": "block",
+        //   "type": "investec_init"
+        // }
       ]
     },
     {

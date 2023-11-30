@@ -1,6 +1,6 @@
 {
-  "name": "blockly-vue3",
-  "version": "0.0.0",
+  "name": "investec-blockly",
+  "version": "1.0.0",
   "scripts": {
     "start": "vite",
     "build": "vite build",
