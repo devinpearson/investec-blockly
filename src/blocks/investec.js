@@ -1,132 +1,179 @@
-/**
- * @license
- * Copyright 2023 Devin Pearson
- * SPDX-License-Identifier: MIT
- */
+import { Order } from "blockly/javascript";
 
-/**
- * @fileoverview Define custom blocks.
- * @author devin@blackhat.co.za
- */
+export const investecInit = {
+  type: "investec_init",
+  message0: "set client id %1",
+  args0: [{ type: "input_value", name: "CLIENT_ID" }],
+  message1: "client secret %1",
+  args1: [{ type: "input_value", name: "CLIENT_SECRET" }],
+  message2: "set api key %1",
+  args2: [{ type: "input_value", name: "API_KEY" }],
+  previousStatement: null,
+  nextStatement: true,
+  colour: 230,
+};
 
-// More on defining blocks:
-// https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
+export const investecCardBeforeTransaction = {
+  type: "investec_card_before_transaction",
+  message0: "before transaction",
+  message1: "do %1",
+  args1: [{ type: "input_statement", name: "CODE" }],
+  colour: 230,
+};
 
-import * as Blockly from "blockly/core";
-import { javascriptGenerator, Order } from "blockly/javascript";
+export const investecCardAfterTransaction = {
+  type: "investec_card_after_transaction",
+  message0: "after transaction",
+  message1: "do %1",
+  args1: [{ type: "input_statement", name: "CODE" }],
+  colour: 230,
+};
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_init",
-    message0: "set client id %1",
-    args0: [{ type: "input_value", name: "CLIENT_ID" }],
-    message1: "client secret %1",
-    args1: [{ type: "input_value", name: "CLIENT_SECRET" }],
-    message2: "set api key %1",
-    args2: [{ type: "input_value", name: "API_KEY" }],
-    previousStatement: null,
-    nextStatement: true,
-    colour: 230,
-  },
-]);
+export const investecCardAfterDecline = {
+  type: "investec_card_after_decline",
+  message0: "after decline",
+  message1: "do %1",
+  args1: [{ type: "input_statement", name: "CODE" }],
+  colour: 230,
+};
 
-// not building out the code for this block yet
-// javascriptGenerator.forBlock["investec_init"] = function (block, generator) {
-//   const clientId = generator.valueToCode(block, "CLIENT_ID", Order.ATOMIC);
-//   const clientSecret = generator.valueToCode(
-//     block,
-//     "CLIENT_SECRET",
-//     Order.ATOMIC
-//   );
-//   const apiKey = generator.valueToCode(block, "API_KEY", Order.ATOMIC);
-//   const code = `const clientId = ${clientId}\n const clientSecret = ${clientSecret}\n const apiKey = ${apiKey}\n const investec = new Investec(clientId, clientSecret, apiKey)`;
-//   return code;
-// };
+export const investecAuthValue = {
+  type: "investec_auth_value",
+  message0: "authorization: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "AUTH_VALUE",
+      options: [
+        ["account number", "ACCOUNT_NUMBER"],
+        ["datetime", "DATETIME"],
+        ["currency code", "CURRENCY_CODE"],
+        ["reference", "REFERENCE"],
+        ["cents amount", "CENTS_AMOUNT"],
+        ["merchant code", "MCC"],
+        ["merchant name", "MERCHANT_NAME"],
+        ["merchant city", "MERCHANT_CITY"],
+        ["merchant country", "MERCHANT_COUNTRY"],
+      ],
+    },
+  ],
+  output: null,
+  colour: 230,
+};
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_card_before_transaction",
-    message0: "before transaction",
-    message1: "do %1",
-    args1: [{ type: "input_statement", name: "CODE" }],
-    colour: 230,
-  },
-]);
+export const investecTransValue = {
+  type: "investec_trans_value",
+  message0: "transaction: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "AUTH_VALUE",
+      options: [
+        ["account number", "ACCOUNT_NUMBER"],
+        ["datetime", "DATETIME"],
+        ["currency code", "CURRENCY_CODE"],
+        ["reference", "REFERENCE"],
+        ["cents amount", "CENTS_AMOUNT"],
+        ["merchant code", "MCC"],
+        ["merchant name", "MERCHANT_NAME"],
+        ["merchant city", "MERCHANT_CITY"],
+        ["merchant country", "MERCHANT_COUNTRY"],
+      ],
+    },
+  ],
+  output: null,
+  colour: 230,
+};
 
-javascriptGenerator.forBlock["investec_card_before_transaction"] = function (
-  block,
-  generator
-) {
+export const investecConsoleLog = {
+  type: "investec_console_log",
+  message0: "log %1",
+  args0: [
+    {
+      type: "input_value",
+      name: "VALUE",
+      check: "String",
+    },
+  ],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 230,
+};
+
+export const investecBeforeTransactionReturn = {
+  type: "investec_before_transaction_return",
+  message0: "%1 transaction",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "VALUE",
+      options: [
+        ["approve", "APPROVE"],
+        ["decline", "DECLINE"],
+      ],
+    },
+  ],
+  previousStatement: null,
+  colour: 230,
+};
+
+export const investecCurrencies = {
+  type: "investec_currencies",
+  message0: "currency: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "CURRENCY",
+      options: [
+        ["USD", "USD"],
+        ["GBP", "GBP"],
+        ["EUR", "EUR"],
+        ["AUD", "AUD"],
+        ["CAD", "CAD"],
+        ["CHF", "CHF"],
+        ["CNY", "CNY"],
+        ["CZK", "CZK"],
+        ["DKK", "DKK"],
+        ["HKD", "HKD"],
+        ["HUF", "HUF"],
+        ["ILS", "ILS"],
+        ["JPY", "JPY"],
+        ["MXN", "MXN"],
+        ["NOK", "NOK"],
+        ["NZD", "NZD"],
+        ["PLN", "PLN"],
+        ["RUB", "RUB"],
+        ["SEK", "SEK"],
+        ["SGD", "SGD"],
+        ["THB", "THB"],
+        ["TRY", "TRY"],
+        ["ZAR", "ZAR"],
+      ],
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export const investecCardBeforeTransactionFn = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
   const code = `const beforeTransaction = async (authorization) => {\n${valueCode}\n}`;
   return code;
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_card_after_transaction",
-    message0: "after transaction",
-    message1: "do %1",
-    args1: [{ type: "input_statement", name: "CODE" }],
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_card_after_transaction"] = function (
-  block,
-  generator
-) {
+export const investecCardAfterTransactionFn = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
   const code = `const afterTransaction = async (transaction) => {\n${valueCode}\n}`;
   return code;
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_card_after_decline",
-    message0: "after decline",
-    message1: "do %1",
-    args1: [{ type: "input_statement", name: "CODE" }],
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_card_after_decline"] = function (
-  block,
-  generator
-) {
+export const investecCardAfterDeclineFn = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
   const code = `const afterDecline = async (transaction) => {\n${valueCode}\n}`;
   return code;
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_auth_value",
-    message0: "authorization: %1",
-    args0: [
-      {
-        type: "field_dropdown",
-        name: "AUTH_VALUE",
-        options: [
-          ["account number", "ACCOUNT_NUMBER"],
-          ["datetime", "DATETIME"],
-          ["currency code", "CURRENCY_CODE"],
-          ["reference", "REFERENCE"],
-          ["cents amount", "CENTS_AMOUNT"],
-          ["merchant code", "MCC"],
-          ["merchant name", "MERCHANT_NAME"],
-          ["merchant city", "MERCHANT_CITY"],
-          ["merchant country", "MERCHANT_COUNTRY"],
-        ],
-      },
-    ],
-    output: null,
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_auth_value"] = function (block) {
+export const investecAuthvalueFn = function (block) {
   var mode = block.getFieldValue("AUTH_VALUE");
   if (mode == "ACCOUNT_NUMBER") {
     return [`authorization.accountNumber`, Order.ATOMIC]; // Simplified returns as well.
@@ -149,33 +196,7 @@ javascriptGenerator.forBlock["investec_auth_value"] = function (block) {
   }
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_trans_value",
-    message0: "transaction: %1",
-    args0: [
-      {
-        type: "field_dropdown",
-        name: "AUTH_VALUE",
-        options: [
-          ["account number", "ACCOUNT_NUMBER"],
-          ["datetime", "DATETIME"],
-          ["currency code", "CURRENCY_CODE"],
-          ["reference", "REFERENCE"],
-          ["cents amount", "CENTS_AMOUNT"],
-          ["merchant code", "MCC"],
-          ["merchant name", "MERCHANT_NAME"],
-          ["merchant city", "MERCHANT_CITY"],
-          ["merchant country", "MERCHANT_COUNTRY"],
-        ],
-      },
-    ],
-    output: null,
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_trans_value"] = function (block) {
+export const investecTransValueFn = function (block) {
   var mode = block.getFieldValue("AUTH_VALUE");
   if (mode == "ACCOUNT_NUMBER") {
     return [`transaction.accountNumber`, Order.ATOMIC]; // Simplified returns as well.
@@ -198,53 +219,12 @@ javascriptGenerator.forBlock["investec_trans_value"] = function (block) {
   }
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_console_log",
-    message0: "log %1",
-    args0: [
-      {
-        type: "input_value",
-        name: "VALUE",
-        check: "String",
-      },
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_console_log"] = function (
-  block,
-  generator
-) {
+export const investecConsoleLogFn = function (block, generator) {
   const value = generator.valueToCode(block, "VALUE", Order.ATOMIC);
   return `console.log(${value})`; // Simplified returns as well.
 };
 
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_before_transaction_return",
-    message0: "%1 transaction",
-    args0: [
-      {
-        type: "field_dropdown",
-        name: "VALUE",
-        options: [
-          ["approve", "APPROVE"],
-          ["decline", "DECLINE"],
-        ],
-      },
-    ],
-    previousStatement: null,
-    colour: 230,
-  },
-]);
-
-javascriptGenerator.forBlock["investec_before_transaction_return"] = function (
-  block
-) {
+export const investecBeforeTransactionReturnFn = function (block) {
   const value = block.getFieldValue("VALUE");
   console.log(value);
   if (value == "APPROVE") {
@@ -253,43 +233,3 @@ javascriptGenerator.forBlock["investec_before_transaction_return"] = function (
     return `return false`; // Simplified returns as well.
   }
 };
-
-Blockly.defineBlocksWithJsonArray([
-  {
-    type: "investec_currencies",
-    message0: "currency: %1",
-    args0: [
-      {
-        type: "field_dropdown",
-        name: "CURRENCY",
-        options: [
-          ["USD", "USD"],
-          ["GBP", "GBP"],
-          ["EUR", "EUR"],
-          ["AUD", "AUD"],
-          ["CAD", "CAD"],
-          ["CHF", "CHF"],
-          ["CNY", "CNY"],
-          ["CZK", "CZK"],
-          ["DKK", "DKK"],
-          ["HKD", "HKD"],
-          ["HUF", "HUF"],
-          ["ILS", "ILS"],
-          ["JPY", "JPY"],
-          ["MXN", "MXN"],
-          ["NOK", "NOK"],
-          ["NZD", "NZD"],
-          ["PLN", "PLN"],
-          ["RUB", "RUB"],
-          ["SEK", "SEK"],
-          ["SGD", "SGD"],
-          ["THB", "THB"],
-          ["TRY", "TRY"],
-          ["ZAR", "ZAR"],
-        ],
-      },
-    ],
-    output: String,
-    colour: 230,
-  },
-]);
