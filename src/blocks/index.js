@@ -24,6 +24,8 @@ import {
   investecConsoleLog,
   investecBeforeTransactionReturn,
   investecCurrencies,
+  investecMerchants,
+  investecCountries,
   investecCardBeforeTransactionFn,
   investecCardAfterTransactionFn,
   investecCardAfterDeclineFn,
@@ -43,20 +45,9 @@ Blockly.defineBlocksWithJsonArray([
   investecConsoleLog,
   investecBeforeTransactionReturn,
   investecCurrencies,
+  investecMerchants,
+  investecCountries,
 ]);
-
-// not building out the code for this block yet
-// javascriptGenerator.forBlock["investec_init"] = function (block, generator) {
-//   const clientId = generator.valueToCode(block, "CLIENT_ID", Order.ATOMIC);
-//   const clientSecret = generator.valueToCode(
-//     block,
-//     "CLIENT_SECRET",
-//     Order.ATOMIC
-//   );
-//   const apiKey = generator.valueToCode(block, "API_KEY", Order.ATOMIC);
-//   const code = `const clientId = ${clientId}\n const clientSecret = ${clientSecret}\n const apiKey = ${apiKey}\n const investec = new Investec(clientId, clientSecret, apiKey)`;
-//   return code;
-// };
 
 javascriptGenerator.forBlock["investec_card_before_transaction"] =
   investecCardBeforeTransactionFn;
@@ -69,3 +60,9 @@ javascriptGenerator.forBlock["investec_trans_value"] = investecTransValueFn;
 javascriptGenerator.forBlock["investec_console_log"] = investecConsoleLogFn;
 javascriptGenerator.forBlock["investec_before_transaction_return"] =
   investecBeforeTransactionReturnFn;
+
+
+// add blockly component to send telegram messages
+// add blockly component to send slack messages
+// add blockly component to call webhooks
+// add blockly component to upload to google sheets

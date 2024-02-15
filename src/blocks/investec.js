@@ -1,4 +1,7 @@
 import { Order } from "blockly/javascript";
+import { countries } from "./countries";
+import { merchants } from "./merchants";
+import { CurrencyCode } from "./currencies";
 
 export const investecInit = {
   type: "investec_init",
@@ -124,31 +127,39 @@ export const investecCurrencies = {
     {
       type: "field_dropdown",
       name: "CURRENCY",
-      options: [
-        ["USD", "USD"],
-        ["GBP", "GBP"],
-        ["EUR", "EUR"],
-        ["AUD", "AUD"],
-        ["CAD", "CAD"],
-        ["CHF", "CHF"],
-        ["CNY", "CNY"],
-        ["CZK", "CZK"],
-        ["DKK", "DKK"],
-        ["HKD", "HKD"],
-        ["HUF", "HUF"],
-        ["ILS", "ILS"],
-        ["JPY", "JPY"],
-        ["MXN", "MXN"],
-        ["NOK", "NOK"],
-        ["NZD", "NZD"],
-        ["PLN", "PLN"],
-        ["RUB", "RUB"],
-        ["SEK", "SEK"],
-        ["SGD", "SGD"],
-        ["THB", "THB"],
-        ["TRY", "TRY"],
-        ["ZAR", "ZAR"],
-      ],
+      options: CurrencyCode,
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export const investecMerchants = {
+  type: "investec_merchants",
+  message0: "merchant: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "MERCHANT",
+      options: merchants.map((merchant) => {
+        return [merchant[1], merchant[0]];
+      }),
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export const investecCountries = {
+  type: "investec_countries",
+  message0: "country: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "COUNTRY",
+      options: countries.map((country) => {
+        return [country.name, country.code];
+      }),
     },
   ],
   output: String,
@@ -184,7 +195,7 @@ export const investecAuthvalueFn = function (block) {
   } else if (mode == "REFERENCE") {
     return [`authorization.reference`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "CENTS_AMOUNT") {
-    return [`authorization.cents_amount`, Order.ATOMIC]; // Simplified returns as well.
+    return [`authorization.centsAmount`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "MCC") {
     return [`authorization.merchant.category.code`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "MERCHANT_NAME") {
@@ -207,7 +218,7 @@ export const investecTransValueFn = function (block) {
   } else if (mode == "REFERENCE") {
     return [`transaction.reference`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "CENTS_AMOUNT") {
-    return [`transaction.cents_amount`, Order.ATOMIC]; // Simplified returns as well.
+    return [`transaction.centsAmount`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "MCC") {
     return [`transaction.merchant.category.code`, Order.ATOMIC]; // Simplified returns as well.
   } else if (mode == "MERCHANT_NAME") {
@@ -221,7 +232,7 @@ export const investecTransValueFn = function (block) {
 
 export const investecConsoleLogFn = function (block, generator) {
   const value = generator.valueToCode(block, "VALUE", Order.ATOMIC);
-  return `console.log(${value})`; // Simplified returns as well.
+  return `console.log(${value})\n`; // Simplified returns as well.
 };
 
 export const investecBeforeTransactionReturnFn = function (block) {
@@ -233,3 +244,16 @@ export const investecBeforeTransactionReturnFn = function (block) {
     return `return false`; // Simplified returns as well.
   }
 };
+
+// not building out the code for this block yet
+// javascriptGenerator.forBlock["investec_init"] = function (block, generator) {
+//   const clientId = generator.valueToCode(block, "CLIENT_ID", Order.ATOMIC);
+//   const clientSecret = generator.valueToCode(
+//     block,
+//     "CLIENT_SECRET",
+//     Order.ATOMIC
+//   );
+//   const apiKey = generator.valueToCode(block, "API_KEY", Order.ATOMIC);
+//   const code = `const clientId = ${clientId}\n const clientSecret = ${clientSecret}\n const apiKey = ${apiKey}\n const investec = new Investec(clientId, clientSecret, apiKey)`;
+//   return code;
+// };
