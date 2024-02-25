@@ -1,3 +1,6 @@
+import * as Blockly from "blockly/core";
+import { Order } from "blockly/javascript";
+
 export const countries = [
   {
     code: "AF",
@@ -1245,3 +1248,32 @@ export const countries = [
     name: "Åland Islands",
   },
 ];
+
+export const investecCountriesBlock = {
+  type: "investec_countries",
+  message0: "country: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "COUNTRY",
+      options: countries.map((country) => {
+        return [country.name, country.code];
+      }),
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export function installCountriesBlock(generators = {}) {
+  Blockly.defineBlocksWithJsonArray([investecCountriesBlock]);
+  if (generators.javascript) {
+    generators.javascript.forBlock["investec_countries"] = countriesGenerator;
+    // generators.javascript.addReservedWords("specialReservedWord");
+  }
+}
+
+const countriesGenerator = function (block) {
+  var mode = block.getFieldValue("COUNTRY");
+  return [mode, Order.ATOMIC]; // Simplified returns as well.
+};

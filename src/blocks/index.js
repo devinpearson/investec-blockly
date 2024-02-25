@@ -12,55 +12,29 @@
 // More on defining blocks:
 // https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
 
-import * as Blockly from "blockly/core";
-import { javascriptGenerator } from "blockly/javascript";
-import {
-  investecInit,
-  investecCardBeforeTransaction,
-  investecCardAfterTransaction,
-  investecCardAfterDecline,
-  investecAuthValue,
-  investecTransValue,
-  investecConsoleLog,
-  investecBeforeTransactionReturn,
-  investecCurrencies,
-  investecMerchants,
-  investecCountries,
-  investecCardBeforeTransactionFn,
-  investecCardAfterTransactionFn,
-  investecCardAfterDeclineFn,
-  investecAuthvalueFn,
-  investecTransValueFn,
-  investecConsoleLogFn,
-  investecBeforeTransactionReturnFn,
-} from "./investec";
+import { installConsoleLogBlock } from "./console_log";
+import { installTransBlock } from "./dropdown_investec_trans";
+import { installAuthValueBlock } from "./dropdown_auth_value";
+import { installAfterTransactionBlock } from "./after_transaction";
+import { installBeforeTransactionBlock } from "./before_transaction";
+import { installAfterDeclineBlock } from "./after_decline";
+import { installBeforeTransactionReturnBlock } from "./before_transaction_return";
+import { installCountriesBlock } from "./countries";
+import { installMerchantBlock } from "./merchants";
+import { installCurrenciesBlock } from "./currencies";
 
-Blockly.defineBlocksWithJsonArray([
-  investecInit,
-  investecCardBeforeTransaction,
-  investecCardAfterTransaction,
-  investecCardAfterDecline,
-  investecAuthValue,
-  investecTransValue,
-  investecConsoleLog,
-  investecBeforeTransactionReturn,
-  investecCurrencies,
-  investecMerchants,
-  investecCountries,
-]);
-
-javascriptGenerator.forBlock["investec_card_before_transaction"] =
-  investecCardBeforeTransactionFn;
-javascriptGenerator.forBlock["investec_card_after_transaction"] =
-  investecCardAfterTransactionFn;
-javascriptGenerator.forBlock["investec_card_after_decline"] =
-  investecCardAfterDeclineFn;
-javascriptGenerator.forBlock["investec_auth_value"] = investecAuthvalueFn;
-javascriptGenerator.forBlock["investec_trans_value"] = investecTransValueFn;
-javascriptGenerator.forBlock["investec_console_log"] = investecConsoleLogFn;
-javascriptGenerator.forBlock["investec_before_transaction_return"] =
-  investecBeforeTransactionReturnFn;
-
+export {
+  installConsoleLogBlock,
+  installTransBlock,
+  installAuthValueBlock,
+  installAfterTransactionBlock,
+  installBeforeTransactionBlock,
+  installAfterDeclineBlock,
+  installBeforeTransactionReturnBlock,
+  installCountriesBlock,
+  installMerchantBlock,
+  installCurrenciesBlock,
+};
 
 // add blockly component to send telegram messages
 // add blockly component to send slack messages

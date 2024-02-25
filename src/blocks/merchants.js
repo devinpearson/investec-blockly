@@ -1,3 +1,6 @@
+import * as Blockly from "blockly/core";
+import { Order } from "blockly/javascript";
+
 export const merchants = [
   ["7623", "A/C, Refrigeration Repair"],
   ["8931", "Accounting/Bookkeeping Services"],
@@ -304,3 +307,32 @@ export const merchants = [
   ["5621", "Womens Ready-To-Wear Stores"],
   ["5935", "Wrecking and Salvage Yards"],
 ];
+
+export const investecMerchantBlock = {
+  type: "investec_merchants",
+  message0: "merchant: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "MERCHANT",
+      options: merchants.map((merchant) => {
+        return [merchant[1], merchant[0]];
+      }),
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export function installMerchantBlock(generators = {}) {
+  Blockly.defineBlocksWithJsonArray([investecMerchantBlock]);
+  if (generators.javascript) {
+    generators.javascript.forBlock["investec_merchants"] = merchantGenerator;
+    // generators.javascript.addReservedWords("specialReservedWord");
+  }
+}
+
+const merchantGenerator = function (block) {
+  var mode = block.getFieldValue("MERCHANT");
+  return [mode, Order.ATOMIC]; // Simplified returns as well.
+};

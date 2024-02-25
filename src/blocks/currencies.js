@@ -1,3 +1,6 @@
+import * as Blockly from "blockly/core";
+import { Order } from "blockly/javascript";
+
 export const CurrencyCode = [
   ["AED", "aed"],
   ["AFA", "afa"],
@@ -352,4 +355,31 @@ export const currencyNameMap = {
   zwd: "Zimbabwe, Zimbabwe Dollars",
   // Unknown handler
   zzz: "Unknown Currency",
+};
+
+export const investecCurrenciesBlock = {
+  type: "investec_currencies",
+  message0: "currency: %1",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "CURRENCY",
+      options: CurrencyCode,
+    },
+  ],
+  output: String,
+  colour: 230,
+};
+
+export function installCurrenciesBlock(generators = {}) {
+  Blockly.defineBlocksWithJsonArray([investecCurrenciesBlock]);
+  if (generators.javascript) {
+    generators.javascript.forBlock["investec_currencies"] = currenciesGenerator;
+    // generators.javascript.addReservedWords("specialReservedWord");
+  }
+}
+
+const currenciesGenerator = function (block) {
+  var mode = block.getFieldValue("CURRENCY");
+  return [mode, Order.ATOMIC]; // Simplified returns as well.
 };
