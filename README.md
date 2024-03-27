@@ -25,6 +25,9 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm install
 ```
 
+You will need to run [investec-card-server](https://github.com/devinpearson/investec-card-server)
+in order to run the project.
+
 ### Compile and Hot-Reload for Development
 
 ```sh
@@ -42,6 +45,3 @@ npm run build
 ```sh
 npm run lint
 ```
-
-### External resources
-[Vue logo](https://github.com/vuejs/art) (logo.png) included during project creation `npm init vue@latest`.

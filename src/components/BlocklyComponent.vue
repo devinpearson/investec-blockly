@@ -31,7 +31,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <div class="blocklyDiv" ref="blocklyDiv"></div>
+    <div class="h-full w-full text-left" ref="blocklyDiv"></div>
     <xml ref="blocklyToolbox" style="display: none">
       <slot></slot>
     </xml>
@@ -40,9 +40,8 @@ onMounted(() => {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.blocklyDiv {
-  height: 100%;
-  width: 100%;
-  text-align: left;
-}
+
+svg[display="none"] {
+    display: none;
+  }
 </style>

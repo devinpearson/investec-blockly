@@ -1,23 +1,65 @@
 <script setup>
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/**
- * @fileoverview Main Vue component that includes the Blockly component.
- * @author dcoodien@google.com (Dylan Coodien)
- */
-
+import "./style.css";
 import { ref } from "vue";
 import BlocklyComponent from "./components/BlocklyComponent.vue";
+import TransactionComponent from "./components/TransactionComponent.vue";
+import ButtonComponent from "./components/ButtonComponent.vue";
+import DropDownComponent from "./components/DropDownComponent.vue";
+import hljs from "highlight.js/lib/core";
+import javascript from "highlight.js/lib/languages/javascript";
+hljs.registerLanguage("javascript", javascript);
+import "highlight.js/styles/github.css";
+
 import "./blocks";
-import { InvestecToolbox, LogicToolbox, LoopsToolbox, MathToolbox, TextToolbox, ListsToolbox, VariablesToolbox, FunctionsToolbox} from "./toolbox";
+import {
+  InvestecToolbox,
+  LogicToolbox,
+  LoopsToolbox,
+  MathToolbox,
+  TextToolbox,
+  ListsToolbox,
+  VariablesToolbox,
+  FunctionsToolbox,
+} from "./toolbox";
 import { javascriptGenerator } from "blockly/javascript";
+import {
+  installConsoleLogBlock,
+  installTransBlock,
+  installAuthValueBlock,
+  installAfterTransactionBlock,
+  installBeforeTransactionBlock,
+  installAfterDeclineBlock,
+  installBeforeTransactionReturnBlock,
+  installCountriesBlock,
+  installCurrenciesBlock,
+  installMerchantBlock,
+} from "./blocks";
+
+installConsoleLogBlock({ javascript: javascriptGenerator });
+installTransBlock({ javascript: javascriptGenerator });
+installAuthValueBlock({ javascript: javascriptGenerator });
+installAfterTransactionBlock({ javascript: javascriptGenerator });
+installBeforeTransactionBlock({ javascript: javascriptGenerator });
+installAfterDeclineBlock({ javascript: javascriptGenerator });
+installBeforeTransactionReturnBlock({ javascript: javascriptGenerator });
+installCountriesBlock({ javascript: javascriptGenerator });
+installCurrenciesBlock({ javascript: javascriptGenerator });
+installMerchantBlock({ javascript: javascriptGenerator });
+
+import * as Blockly from "blockly/core";
 
 const foo = ref();
 const code = ref();
+const outputRef = ref();
+// const transaction = ref({
+//   currencyCode: "zar",
+//   centsAmount: 1000,
+//   merchantCode: "0000",
+//   merchantName: "Test Merchant",
+//   merchantCity: "Cape Town",
+//   merchantCountry: "ZA",
+// });
+const workspaceName = ref("Petrol Card");
 const options = {
   media: "media/",
   grid: {
@@ -27,84 +69,124 @@ const options = {
     snap: true,
   },
   toolbox: {
-    "kind": "categoryToolbox",
-    "contents": [
-    InvestecToolbox,
-    LogicToolbox,
-    LoopsToolbox,
-    MathToolbox,
-    TextToolbox,
-    ListsToolbox,
-    VariablesToolbox,
-    FunctionsToolbox,
-    ]
+    kind: "categoryToolbox",
+    contents: [
+      InvestecToolbox,
+      LogicToolbox,
+      LoopsToolbox,
+      MathToolbox,
+      TextToolbox,
+      ListsToolbox,
+      VariablesToolbox,
+      FunctionsToolbox,
+    ],
   },
 };
 
-const showCode = () => (code.value = javascriptGenerator.workspaceToCode(foo.value.workspace));
-const runCode = () => {
-      // Generate JavaScript code and run it.
-      window.LoopTrap = 1000;
-      javascriptGenerator.INFINITE_LOOP_TRAP =
-          'if (--window.LoopTrap < 0) throw "Infinite loop.";\n';
-      var code = javascriptGenerator.workspaceToCode(foo.value.workspace);
-      javascriptGenerator.INFINITE_LOOP_TRAP = null;
-      try {
-        eval(code);
-      } catch (e) {
-        alert(e);
-      }
-    }
+function showCode() {
+  const codeText = javascriptGenerator.workspaceToCode(foo.value.workspace);
+  code.value = hljs.highlight(codeText, { language: "javascript" }).value;
+}
+
+async function runCode(transaction) {
+  // Generate JavaScript code and run it.
+  window.LoopTrap = 1000;
+  javascriptGenerator.INFINITE_LOOP_TRAP =
+    'if (--window.LoopTrap < 0) throw "Infinite loop.";\n';
+  var code = encodeURI(
+    javascriptGenerator.workspaceToCode(foo.value.workspace)
+  );
+  javascriptGenerator.INFINITE_LOOP_TRAP = null;
+  try {
+    const result = await fetch("http://localhost:3010/simulate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        transaction: transaction,
+        code: code,
+      }),
+    });
+    const executionItems = await result.json();
+    console.log(executionItems);
+    outputRef.value = executionItems;
+  } catch (e) {
+    alert(e);
+  }
+}
+
+function saveWorkspace() {
+  const state = Blockly.serialization.workspaces.save(foo.value.workspace);
+  //   localStorage.setItem("blockly", JSON.stringify(state));
+  localStorage.setItem(workspaceName.value, JSON.stringify(state));
+}
+
+function loadWorkspace() {
+  //   const state = localStorage.getItem("blockly");
+  const state = localStorage.getItem(workspaceName.value);
+  //   console.log(workspaceName.value);
+  Blockly.serialization.workspaces.load(JSON.parse(state), foo.value.workspace);
+  showCode();
+}
+
+function clearWorkspace() {
+  //localStorage.clear();
+  foo.value.workspace.clear();
+}
 </script>
 
 <template>
-  <div id="app">
-
-    <BlocklyComponent id="blockly2" :options="options" ref="foo"></BlocklyComponent>
-    <p id="code">
-      <button v-on:click="showCode()">Show JavaScript</button>
-      <button v-on:click="runCode()">Run Code</button>
-      <pre v-html="code"></pre>
-    </p>
+  <div class="mx-2">
+    <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+      Programmable Card Simulation
+    </h1>
+    <div id="app">
+      <BlocklyComponent
+        id="blockly2"
+        style="height: 600px; width: 1040px"
+        :options="options"
+        ref="foo"
+      ></BlocklyComponent>
+      <div class="overflow-hidden rounded-lg bg-gray-50 mt-2">
+        <div class="px-4 py-5 sm:p-6">
+          <div id="code">
+            <button-component
+              message="Show JavaScript"
+              @onButtonClick="showCode"
+            ></button-component>
+            <button-component
+              message="Save Workspace"
+              @onButtonClick="saveWorkspace"
+            ></button-component>
+            <button-component
+              message="Load Workspace"
+              @onButtonClick="loadWorkspace"
+            ></button-component>
+            <button-component
+              message="Clear Workspace"
+              @onButtonClick="clearWorkspace"
+            ></button-component>
+            <drop-down-component
+              v-model:workspaceName="workspaceName"
+            ></drop-down-component>
+            <pre v-html="code" class="mt-2"></pre>
+          </div>
+        </div>
+      </div>
+      <transaction-component
+        v-model:outputRef="outputRef"
+        @on-simulate="runCode"
+      ></transaction-component>
+    </div>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
-
-html,
-body {
-  margin: 0;
-}
-
-#code {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 50%;
-  margin: 0;
-  background-color: beige;
-}
-
-#blockly1 {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 50%;
-  height: 50%;
-}
-
-#blockly2 {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 50%;
+svg[display="none"] {
+  display: none;
 }
 </style>
+// add form to create transaction simulation // add component to show output
+from server simulation // build component to store env variables // potentially
+allow user to upload code to card via api
