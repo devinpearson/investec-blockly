@@ -1,16 +1,14 @@
 <script setup>
-/**
- * @license
- * Copyright 2022 Google LLC
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/**
- * @fileoverview Main Vue component that includes the Blockly component.
- * @author dcoodien@google.com (Dylan Coodien)
- */
+import "./style.css";
 import { ref } from "vue";
 import BlocklyComponent from "./components/BlocklyComponent.vue";
+import TransactionComponent from "./components/TransactionComponent.vue";
+import ButtonComponent from "./components/ButtonComponent.vue";
+import DropDownComponent from "./components/DropDownComponent.vue";
+import hljs from "highlight.js/lib/core";
+import javascript from "highlight.js/lib/languages/javascript";
+hljs.registerLanguage("javascript", javascript);
+import "highlight.js/styles/github.css";
 
 import "./blocks";
 import {
@@ -49,17 +47,19 @@ installCurrenciesBlock({ javascript: javascriptGenerator });
 installMerchantBlock({ javascript: javascriptGenerator });
 
 import * as Blockly from "blockly/core";
+
 const foo = ref();
 const code = ref();
 const outputRef = ref();
-const transaction = {
-  currencyCode: "zar",
-  centsAmount: 1000,
-  merchantCode: "0000",
-  merchantName: "Test Merchant",
-  merchantCity: "Cape Town",
-  merchantCountry: "ZA",
-};
+// const transaction = ref({
+//   currencyCode: "zar",
+//   centsAmount: 1000,
+//   merchantCode: "0000",
+//   merchantName: "Test Merchant",
+//   merchantCity: "Cape Town",
+//   merchantCountry: "ZA",
+// });
+const workspaceName = ref("Petrol Card");
 const options = {
   media: "media/",
   grid: {
@@ -84,10 +84,11 @@ const options = {
 };
 
 function showCode() {
-  code.value = javascriptGenerator.workspaceToCode(foo.value.workspace);
+  const codeText = javascriptGenerator.workspaceToCode(foo.value.workspace);
+  code.value = hljs.highlight(codeText, { language: "javascript" }).value;
 }
 
-async function runCode() {
+async function runCode(transaction) {
   // Generate JavaScript code and run it.
   window.LoopTrap = 1000;
   javascriptGenerator.INFINITE_LOOP_TRAP =
@@ -108,14 +109,8 @@ async function runCode() {
       }),
     });
     const executionItems = await result.json();
-    outputRef.value = executionItems;
     console.log(executionItems);
-    executionItems.forEach((item) => {
-      console.log("\n💻 ", item.type);
-      item.logs.forEach((log) => {
-        console.log("\n", log.level, log.content);
-      });
-    });
+    outputRef.value = executionItems;
   } catch (e) {
     alert(e);
   }
@@ -123,133 +118,75 @@ async function runCode() {
 
 function saveWorkspace() {
   const state = Blockly.serialization.workspaces.save(foo.value.workspace);
-  localStorage.setItem("blockly", JSON.stringify(state));
+  //   localStorage.setItem("blockly", JSON.stringify(state));
+  localStorage.setItem(workspaceName.value, JSON.stringify(state));
 }
 
 function loadWorkspace() {
-  const state = localStorage.getItem("blockly");
+  //   const state = localStorage.getItem("blockly");
+  const state = localStorage.getItem(workspaceName.value);
+  //   console.log(workspaceName.value);
   Blockly.serialization.workspaces.load(JSON.parse(state), foo.value.workspace);
+  showCode();
 }
 
 function clearWorkspace() {
-  localStorage.clear();
+  //localStorage.clear();
   foo.value.workspace.clear();
 }
 </script>
 
 <template>
-  <div id="app">
-    <BlocklyComponent
-      id="blockly2"
-      style="height: 480px; width: 600px"
-      :options="options"
-      ref="foo"
-    ></BlocklyComponent>
-    <div id="code">
-      <button v-on:click="showCode()">Show JavaScript</button>
-      <button v-on:click="saveWorkspace()">Save Workspace</button>
-      <button v-on:click="loadWorkspace()">Load Workspace</button>
-      <button v-on:click="clearWorkspace()">Clear Workspace</button>
-      <pre v-html="code"></pre>
-    </div>
-    <div id="output" style="height: 480px; width: 600px">
-      <h1>Simulation Response:</h1>
-      <ul v-if="outputRef">
-        <li v-for="item in outputRef" :key="item.id">
-          <h2>{{ item.type }}</h2>
-          <ul v-for="log in item.logs" :key="log.id">
-            <li>{{ log.level }}: {{ log.content }}</li>
-          </ul>
-        </li>
-      </ul>
-      <p v-else>...run simulation to see results</p>
-    </div>
-    <div id="form">
-      <form @submit.prevent="runCode">
-        <p>Transaction:</p>
-        <p>
-          Currency:
-          <input type="text" required v-model="transaction.currencyCode" />
-        </p>
-        <p>Amount: <input type="number" v-model="transaction.centsAmount" /></p>
-        <p>
-          Merchant Code:
-          <input type="text" required v-model="transaction.merchantCode" />
-        </p>
-        <p>
-          Merchant Name:
-          <input type="text" required v-model="transaction.merchantName" />
-        </p>
-        <p>
-          Merchant City:
-          <input type="text" required v-model="transaction.merchantCity" />
-        </p>
-        <p>
-          Merchant Country:
-          <input type="text" required v-model="transaction.merchantCountry" />
-        </p>
-        <button type="submit">Run Transaction</button>
-      </form>
+  <div class="mx-2">
+    <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+      Programmable Card Simulation
+    </h1>
+    <div id="app">
+      <BlocklyComponent
+        id="blockly2"
+        style="height: 600px; width: 1040px"
+        :options="options"
+        ref="foo"
+      ></BlocklyComponent>
+      <div class="overflow-hidden rounded-lg bg-gray-50 mt-2">
+        <div class="px-4 py-5 sm:p-6">
+          <div id="code">
+            <button-component
+              message="Show JavaScript"
+              @onButtonClick="showCode"
+            ></button-component>
+            <button-component
+              message="Save Workspace"
+              @onButtonClick="saveWorkspace"
+            ></button-component>
+            <button-component
+              message="Load Workspace"
+              @onButtonClick="loadWorkspace"
+            ></button-component>
+            <button-component
+              message="Clear Workspace"
+              @onButtonClick="clearWorkspace"
+            ></button-component>
+            <drop-down-component
+              v-model:workspaceName="workspaceName"
+            ></drop-down-component>
+            <pre v-html="code" class="mt-2"></pre>
+          </div>
+        </div>
+      </div>
+      <transaction-component
+        v-model:outputRef="outputRef"
+        @on-simulate="runCode"
+      ></transaction-component>
     </div>
   </div>
 </template>
 
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
-
-html,
-body {
-  margin: 0;
-}
-
-#code {
-  /* position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 70%;
-  height: 50%;
-  margin: 0; */
-  background-color: beige;
-}
-
-/* #blockly1 { */
-/* position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 70%;
-  height: 50%; */
-/* } */
-
-/* #blockly2 { */
-/* position: absolute;
-  left: 0;
-  top: 0;
-  width: 70%;
-  height: 50%; */
-/* } */
-
-#form {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 30%;
-  height: 50%;
-}
-
-#output {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 30%;
-  height: 50%;
+svg[display="none"] {
+  display: none;
 }
 </style>
-
 // add form to create transaction simulation // add component to show output
 from server simulation // build component to store env variables // potentially
 allow user to upload code to card via api
