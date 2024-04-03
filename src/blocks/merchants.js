@@ -316,11 +316,11 @@ export const investecMerchantBlock = {
       type: "field_dropdown",
       name: "MERCHANT",
       options: merchants.map((merchant) => {
-        return [merchant[1], merchant[0]];
+        return [merchant[0] + " - " + merchant[1], merchant[0]];
       }),
     },
   ],
-  output: String,
+  output: "String",
   colour: 230,
 };
 
@@ -334,5 +334,5 @@ export function installMerchantBlock(generators = {}) {
 
 const merchantGenerator = function (block) {
   var mode = block.getFieldValue("MERCHANT");
-  return [mode, Order.ATOMIC]; // Simplified returns as well.
+  return [`'${mode}'`, Order.ATOMIC]; // Simplified returns as well.
 };

@@ -29,8 +29,8 @@ export function installBeforeTransactionReturnBlock(generators = {}) {
 const beforeTransactionReturnGenerator = function (block) {
   const value = block.getFieldValue("VALUE");
   if (value == "APPROVE") {
-    return `return true`; // Simplified returns as well.
+    return `\nreturn true\n`; // Simplified returns as well.
   } else {
-    return `return false`; // Simplified returns as well.
+    return `\nreturn false\n`; // Simplified returns as well.
   }
 };

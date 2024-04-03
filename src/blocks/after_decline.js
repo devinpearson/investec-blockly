@@ -19,6 +19,6 @@ export function installAfterDeclineBlock(generators = {}) {
 
 const afterDeclineGenerator = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
-  const code = `const afterDecline = async (transaction) => {\n${valueCode}\n}`;
+  const code = `const afterDecline = async (transaction) => {\n${valueCode}}\n`;
   return code;
 };

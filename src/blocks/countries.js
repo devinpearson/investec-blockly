@@ -1261,7 +1261,7 @@ export const investecCountriesBlock = {
       }),
     },
   ],
-  output: String,
+  output: "String",
   colour: 230,
 };
 
@@ -1275,5 +1275,5 @@ export function installCountriesBlock(generators = {}) {
 
 const countriesGenerator = function (block) {
   var mode = block.getFieldValue("COUNTRY");
-  return [mode, Order.ATOMIC]; // Simplified returns as well.
+  return [`'${mode}'`, Order.ATOMIC]; // Simplified returns as well.
 };

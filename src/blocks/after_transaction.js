@@ -19,6 +19,6 @@ export function installAfterTransactionBlock(generators = {}) {
 
 const afterTransactionGenerator = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
-  const code = `const afterTransaction = async (transaction) => {\n${valueCode}\n}`;
+  const code = `const afterTransaction = async (transaction) => {\n${valueCode}}\n`;
   return code;
 };
