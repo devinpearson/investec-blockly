@@ -12,6 +12,7 @@
 
 import { onMounted, ref, shallowRef } from "vue";
 import Blockly from "blockly";
+import Theme from "@blockly/theme-modern";
 
 const props = defineProps(["options"]);
 const blocklyToolbox = ref();
@@ -22,6 +23,7 @@ defineExpose({ workspace });
 
 onMounted(() => {
   const options = props.options || {};
+  options.theme = options.theme || Theme;
   if (!options.toolbox) {
     options.toolbox = blocklyToolbox.value;
   }
@@ -40,8 +42,7 @@ onMounted(() => {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
 svg[display="none"] {
-    display: none;
-  }
+  display: none;
+}
 </style>

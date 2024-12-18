@@ -10,6 +10,6 @@ const workspaceName = defineModel("workspaceName");
   >
     <option>Default</option>
     <option>Petrol Card</option>
-    <option>Mexico</option>
+    <option>Amount</option>
   </select>
 </template>

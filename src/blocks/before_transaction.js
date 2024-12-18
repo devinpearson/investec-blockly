@@ -19,6 +19,6 @@ export function installBeforeTransactionBlock(generators = {}) {
 
 const beforeTransactionGenerator = function (block, generator) {
   const valueCode = generator.statementToCode(block, "CODE");
-  const code = `const beforeTransaction = async (authorization) => {\n${valueCode}\n}`;
+  const code = `const beforeTransaction = async (authorization) => {\n${valueCode}}\n`;
   return code;
 };

@@ -35,6 +35,8 @@ import {
   installMerchantBlock,
 } from "./blocks";
 
+import { amountExample, defaultExample, petrolCardExample } from "./examples";
+
 installConsoleLogBlock({ javascript: javascriptGenerator });
 installTransBlock({ javascript: javascriptGenerator });
 installAuthValueBlock({ javascript: javascriptGenerator });
@@ -94,7 +96,7 @@ async function runCode(transaction) {
   javascriptGenerator.INFINITE_LOOP_TRAP =
     'if (--window.LoopTrap < 0) throw "Infinite loop.";\n';
   var code = encodeURI(
-    javascriptGenerator.workspaceToCode(foo.value.workspace)
+    javascriptGenerator.workspaceToCode(foo.value.workspace),
   );
   javascriptGenerator.INFINITE_LOOP_TRAP = null;
   try {
@@ -124,9 +126,30 @@ function saveWorkspace() {
 
 function loadWorkspace() {
   //   const state = localStorage.getItem("blockly");
-  const state = localStorage.getItem(workspaceName.value);
+    const state = localStorage.getItem(workspaceName.value);
   //   console.log(workspaceName.value);
-  Blockly.serialization.workspaces.load(JSON.parse(state), foo.value.workspace);
+    Blockly.serialization.workspaces.load(JSON.parse(state), foo.value.workspace);
+  showCode();
+}
+
+function loadExample() {
+  switch (workspaceName.value) {
+    case "Petrol Card":
+      Blockly.serialization.workspaces.load(
+        petrolCardExample,
+        foo.value.workspace,
+      );
+      break;
+    case "Default":
+      Blockly.serialization.workspaces.load(
+        defaultExample,
+        foo.value.workspace,
+      );
+      break;
+    case "Amount":
+      Blockly.serialization.workspaces.load(amountExample, foo.value.workspace);
+      break;
+  }
   showCode();
 }
 
@@ -162,6 +185,10 @@ function clearWorkspace() {
             <button-component
               message="Load Workspace"
               @onButtonClick="loadWorkspace"
+            ></button-component>
+            <button-component
+              message="Load Example"
+              @onButtonClick="loadExample"
             ></button-component>
             <button-component
               message="Clear Workspace"

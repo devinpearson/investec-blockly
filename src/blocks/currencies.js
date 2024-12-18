@@ -367,7 +367,7 @@ export const investecCurrenciesBlock = {
       options: CurrencyCode,
     },
   ],
-  output: String,
+  output: "String",
   colour: 230,
 };
 
@@ -381,5 +381,5 @@ export function installCurrenciesBlock(generators = {}) {
 
 const currenciesGenerator = function (block) {
   var mode = block.getFieldValue("CURRENCY");
-  return [mode, Order.ATOMIC]; // Simplified returns as well.
+  return [`'${mode}'`, Order.ATOMIC]; // Simplified returns as well.
 };
