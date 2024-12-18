@@ -150,11 +150,6 @@ function loadExample() {
       Blockly.serialization.workspaces.load(amountExample, foo.value.workspace);
       break;
   }
-  //   const state = localStorage.getItem("blockly");
-  //   const state = localStorage.getItem(workspaceName.value);
-  //   console.log(workspaceName.value);
-  //   Blockly.serialization.workspaces.load(JSON.parse(state), foo.value.workspace);
-  // Blockly.serialization.workspaces.load(amountExample, foo.value.workspace);
   showCode();
 }
 
