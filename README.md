@@ -1,15 +1,18 @@
 # investec-blockly
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 A basic example of blockly with blocks created specifically for Investec programmable card.
 
 Blocks available:
 - `before transaction` - creates the beforeTransaction function
 - `after transaction` - creates the afterTransaction function
 - `after decline` - creates the afterDecline function
-- `authorization` - the fields avaialble from the authorization object
+- `authorization` - the fields available from the authorization object
 - `transaction` - the fields available from the transaction object
 - `log` - creates a log statment
 - `approve` - creates a return transaction for the beforeTransaction function
+- `countries` - a list of countries
+- `currency` - a list of currencies
+- `merchants` - a list of merchants
 
 ## Recommended IDE Setup
 
