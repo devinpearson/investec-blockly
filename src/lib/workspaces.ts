@@ -11,6 +11,7 @@ const RESERVED = new Set([
   "editorHeight",
   "panelWidth",
   "toolboxVisible",
+  "aboutSeen",
 ]);
 
 function parse(json: string | null): WorkspaceState | null {

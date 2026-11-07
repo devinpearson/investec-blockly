@@ -5,6 +5,7 @@ import {
   BookmarkIcon,
   CreditCardIcon,
   PlayIcon,
+  QuestionMarkCircleIcon,
   Squares2X2Icon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
@@ -18,6 +19,7 @@ type Props = {
   running: boolean;
   toolboxVisible: boolean;
   onToggleToolbox: () => void;
+  onAbout: () => void;
   onOpen: (source: WorkspaceSource) => void;
   onSaveAs: () => void;
   onImport: (file: File) => void;
@@ -69,6 +71,7 @@ export function Header({
   running,
   toolboxVisible,
   onToggleToolbox,
+  onAbout,
   onOpen,
   onSaveAs,
   onImport,
@@ -145,6 +148,11 @@ export function Header({
           label="Clear"
           icon={<TrashIcon className={iconClass} aria-hidden />}
           onClick={onClear}
+        />
+        <ToolButton
+          label="About"
+          icon={<QuestionMarkCircleIcon className={iconClass} aria-hidden />}
+          onClick={onAbout}
         />
         <input
           ref={fileInput}

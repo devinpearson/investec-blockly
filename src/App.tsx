@@ -13,6 +13,7 @@ import {
 } from "blockly/javascript";
 
 import { BlocklyWorkspace } from "./components/BlocklyWorkspace";
+import { AboutDialog } from "./components/AboutDialog";
 import { CodeView } from "./components/CodeView";
 import { GuideView } from "./components/GuideView";
 import type { EnvironmentRow } from "./components/EnvironmentEditor";
@@ -72,6 +73,8 @@ const AUTOSAVE_DELAY_MS = 500;
 const TOOLBOX_KEY = STORAGE_PREFIX + "toolboxVisible";
 // Which example or saved workspace the autosave came from, for its guide.
 const SOURCE_KEY = STORAGE_PREFIX + "autosaveSource";
+// Set once the About dialog has been seen, so it only opens by itself once.
+const ABOUT_SEEN_KEY = STORAGE_PREFIX + "aboutSeen";
 
 /** Remembered choice, else shown except on phone-sized screens. */
 function initialToolboxVisible(): boolean {
@@ -150,6 +153,9 @@ export default function App() {
   const [saved, setSaved] = useState(listSaved);
   const [code, setCode] = useState("");
   const [tab, setTab] = useState<PanelTab>("transaction");
+  const [aboutOpen, setAboutOpen] = useState(
+    () => readStorage(ABOUT_SEEN_KEY) === null,
+  );
   const [currentTransaction, setTransaction] =
     useState<TransactionInput>(defaultTransaction);
   const [currentEnvironment, setEnvironment] = useState<EnvironmentRow[]>([]);
@@ -430,6 +436,7 @@ export default function App() {
         running={running}
         toolboxVisible={toolboxVisible}
         onToggleToolbox={toggleToolbox}
+        onAbout={() => setAboutOpen(true)}
         onOpen={open}
         onSaveAs={saveAs}
         onImport={importWorkspace}
@@ -479,13 +486,25 @@ export default function App() {
             />
           )}
           {activeTab === "results" && (
-            <ResultsView items={output} transaction={outputFor} error={error} />
+            <ResultsView
+              items={output}
+              transaction={outputFor}
+              error={error}
+              onShowServerHelp={() => setAboutOpen(true)}
+            />
           )}
           {activeTab === "code" && (
             <CodeView code={code} onCopied={() => notify("Code copied.")} />
           )}
         </SidePanel>
       </main>
+      <AboutDialog
+        open={aboutOpen}
+        onClose={() => {
+          setAboutOpen(false);
+          writeStorage(ABOUT_SEEN_KEY, "1");
+        }}
+      />
       <Toasts toasts={toasts} onDismiss={dismiss} />
     </div>
   );

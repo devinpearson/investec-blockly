@@ -78,6 +78,10 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
+The app opens with an About dialog (also under About in the header) that
+explains the simulator, checks whether the server is reachable and walks
+through starting it.
+
 You will need to run [investec-card-server](https://github.com/devinpearson/investec-card-server)
 in order to run the project. It is expected at `http://localhost:3010`; to use a
 different address, set `VITE_SIMULATOR_URL` in a `.env.local` file:

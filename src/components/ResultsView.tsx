@@ -4,6 +4,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/20/solid";
 import { LogContent } from "./LogContent";
+import { isUnreachableError } from "../lib/simulator";
 import type {
   ExecutionItem,
   LogLevel,
@@ -11,6 +12,8 @@ import type {
 } from "../lib/simulator";
 
 type Props = {
+  /** Offered when the server can't be reached. */
+  onShowServerHelp?: () => void;
   items: ExecutionItem[] | null;
   /** The transaction the results are for. */
   transaction: TransactionInput | null;
@@ -32,7 +35,12 @@ const levelStyles: Record<LogLevel, string> = {
 const formatAmount = (transaction: TransactionInput) =>
   `${(transaction.centsAmount / 100).toFixed(2)} ${transaction.currencyCode.toUpperCase()}`;
 
-export function ResultsView({ items, transaction, error }: Props) {
+export function ResultsView({
+  items,
+  transaction,
+  error,
+  onShowServerHelp,
+}: Props) {
   if (error) {
     return (
       <div
@@ -43,7 +51,18 @@ export function ResultsView({ items, transaction, error }: Props) {
           className="mt-0.5 size-4 shrink-0"
           aria-hidden
         />
-        <p>{error}</p>
+        <div className="min-w-0">
+          <p>{error}</p>
+          {onShowServerHelp && isUnreachableError(error) && (
+            <button
+              type="button"
+              onClick={onShowServerHelp}
+              className="mt-2 font-medium underline underline-offset-2 hover:no-underline"
+            >
+              How to start the server
+            </button>
+          )}
+        </div>
       </div>
     );
   }

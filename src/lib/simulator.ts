@@ -98,3 +98,23 @@ export function validateTransaction(
   ).find(([key]) => !String(transaction[key]).trim());
   return missing ? `${missing[1]} is required.` : null;
 }
+
+/** True when investec-card-server answers at SIMULATOR_URL within 3 seconds. */
+export async function checkSimulator(): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), 3000);
+  try {
+    const response = await fetch(`${SIMULATOR_URL}/`, {
+      signal: controller.signal,
+    });
+    return response.ok;
+  } catch {
+    return false;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+/** True for the error simulate() throws when the server can't be reached. */
+export const isUnreachableError = (message: string) =>
+  message.startsWith("Could not reach the simulator");
