@@ -2,6 +2,7 @@ import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import type { JavascriptGenerator } from "blockly/javascript";
 import type { Generators } from "./context";
+import { colours } from "./colours";
 
 const LEVELS = { INFO: "log", WARN: "warn", ERROR: "error" } as const;
 
@@ -27,7 +28,7 @@ export const investecConsoleLogBlock = {
   ],
   previousStatement: null,
   nextStatement: null,
-  colour: 230,
+  colour: colours.log,
   tooltip:
     "Writes a message to the card's logs at the chosen level (console.log, " +
     "console.warn or console.error).",

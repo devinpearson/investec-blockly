@@ -1,3 +1,4 @@
+import { categoryColours } from "../blocks/colours";
 const text = (value: string) => ({
   shadow: { type: "text", fields: { TEXT: value } },
 });
@@ -8,7 +9,7 @@ const text = (value: string) => ({
 export const investec = {
   kind: "category",
   name: "Card",
-  colour: "#5C81A6",
+  colour: categoryColours.card,
   contents: [
     { kind: "block", type: "investec_card_before_transaction" },
     { kind: "block", type: "investec_card_after_transaction" },

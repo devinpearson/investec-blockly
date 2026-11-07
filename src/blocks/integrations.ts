@@ -8,6 +8,7 @@ import {
   type ValueCode,
 } from "./context";
 import { provideSendRequest } from "./http";
+import { colours } from "./colours";
 
 // Services to send purchases to. All requests go through sendRequest, which
 // logs a warning when a service answers with an error status.
@@ -28,7 +29,7 @@ export const airtableRecordBlock = {
   args4: [{ type: "input_value", name: "TOKEN", check: "String" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Adds a row to an Airtable table. Fields is an object whose keys match " +
     "the column names; values are converted to the column types. Use a " +
@@ -44,7 +45,7 @@ export const webhookBlock = {
   args1: [{ type: "input_value", name: "DATA" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Posts data as JSON to a Make.com, Zapier or other webhook URL, which " +
     "can pass it on to Sheets, Notion, email and more.",
@@ -58,7 +59,7 @@ export const ntfyBlock = {
   args1: [{ type: "input_value", name: "TOPIC", check: "String" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Sends a push notification with ntfy.sh: install the ntfy app and " +
     "subscribe to the same topic. A full URL works for a self-hosted server.",
@@ -75,7 +76,7 @@ export const whatsAppBlock = {
   args2: [{ type: "input_value", name: "API_KEY", check: "String" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Sends a WhatsApp message to your own number with CallMeBot, a free " +
     "third-party service that is not provided or endorsed by WhatsApp. " +
@@ -88,7 +89,7 @@ export const formatAmountBlock = {
   type: "investec_format_amount",
   message0: "amount as text",
   output: "String",
-  colour: 230,
+  colour: colours.data,
   tooltip:
     "The amount for messages, e.g. R1,234.50 (or 12.00 USD for other " +
     "currencies).",

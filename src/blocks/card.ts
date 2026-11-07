@@ -14,6 +14,7 @@ import {
   merchantGroups,
   type MerchantGroupKey,
 } from "./merchant_groups";
+import { colours } from "./colours";
 
 // Blocks that read the card event. They resolve to `authorization` in before
 // transaction and `transaction` in the after handlers, so one block works in
@@ -33,7 +34,7 @@ export const eventValueBlock = {
   message0: "card event: %1",
   args0: [{ type: "field_dropdown", name: "FIELD", options: cardFieldOptions }],
   output: null,
-  colour: 230,
+  colour: colours.data,
   tooltip:
     "A field of the card event — the authorization in before transaction, " +
     "the transaction in after transaction / after decline.",
@@ -43,7 +44,7 @@ export const amountRandsBlock = {
   type: "investec_amount_rands",
   message0: "amount in rands",
   output: "Number",
-  colour: 230,
+  colour: colours.data,
   tooltip: "The transaction amount in rands (cents ÷ 100), e.g. 12.5.",
 };
 
@@ -68,7 +69,7 @@ export const amountCompareBlock = {
     },
   ],
   output: "Boolean",
-  colour: 230,
+  colour: colours.condition,
   tooltip: "Compares the transaction amount with a rand value.",
 };
 
@@ -79,7 +80,7 @@ export const merchantGroupBlock = {
     { type: "field_dropdown", name: "GROUP", options: merchantGroupOptions },
   ],
   output: "Boolean",
-  colour: 230,
+  colour: colours.condition,
   extensions: ["investec_merchant_group_tooltip"],
 };
 

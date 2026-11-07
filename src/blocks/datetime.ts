@@ -8,6 +8,7 @@ import {
   type Generators,
   type ValueCode,
 } from "./context";
+import { colours } from "./colours";
 
 // The card runtime preloads moment (moment-mini, no timezone database), so
 // times are converted with a fixed UTC offset. dateTime is an ISO string in UTC.
@@ -47,7 +48,7 @@ export const timePartBlock = {
     zoneArg,
   ],
   output: "Number",
-  colour: 160,
+  colour: colours.time,
   tooltip:
     "Part of the transaction's date and time, using moment. SAST is UTC+2.",
 };
@@ -57,7 +58,7 @@ export const weekendBlock = {
   message0: "transaction is on a weekend in %1",
   args0: [zoneArg],
   output: "Boolean",
-  colour: 160,
+  colour: colours.time,
   tooltip: "True when the transaction happens on a Saturday or Sunday.",
 };
 
@@ -70,7 +71,7 @@ export const timeBetweenBlock = {
     zoneArg,
   ],
   output: "Boolean",
-  colour: 160,
+  colour: colours.time,
   extensions: ["investec_time_field_validators"],
   tooltip:
     "True when the transaction time (HH:MM, 24-hour) is from the start time " +
@@ -99,7 +100,7 @@ export const weekdayIsBlock = {
     zoneArg,
   ],
   output: "Boolean",
-  colour: 160,
+  colour: colours.time,
   tooltip: "True when the transaction happens on the chosen day.",
 };
 
@@ -108,7 +109,7 @@ export const timeTextBlock = {
   message0: "transaction time as text in %1",
   args0: [zoneArg],
   output: "String",
-  colour: 160,
+  colour: colours.time,
   tooltip: "The transaction date and time for messages, e.g. Sat 7 Nov 14:32.",
 };
 

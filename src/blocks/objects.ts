@@ -5,6 +5,7 @@ import {
   type Generators,
   type ValueCode,
 } from "./context";
+import { colours } from "./colours";
 
 // Plain JavaScript objects, for request bodies and headers and for reading
 // JSON responses. Blockly's built-in blocks have no object support.
@@ -19,7 +20,7 @@ export const objectBlock = {
   message1: "%1",
   args1: [{ type: "input_statement", name: "ENTRIES", check: ENTRY_CHECK }],
   output: null,
-  colour: 20,
+  colour: colours.object,
   tooltip:
     "An object built from key/value entries, e.g. a JSON request body or " +
     "request headers.",
@@ -34,7 +35,7 @@ export const objectEntryBlock = {
   ],
   previousStatement: ENTRY_CHECK,
   nextStatement: ENTRY_CHECK,
-  colour: 20,
+  colour: colours.object,
   tooltip: "One key and value of a create object block.",
 };
 
@@ -47,7 +48,7 @@ export const objectGetBlock = {
   ],
   inputsInline: true,
   output: null,
-  colour: 20,
+  colour: colours.object,
   tooltip:
     "A property of an object, such as a JSON response. Empty if the object " +
     "or property is missing. Chain blocks to read nested values.",

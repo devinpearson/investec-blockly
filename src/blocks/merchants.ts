@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 export const merchants = [
   ["7623", "A/C, Refrigeration Repair"],
@@ -322,7 +323,7 @@ export const investecMerchantBlock = {
     },
   ],
   output: "String",
-  colour: 230,
+  colour: colours.data,
   tooltip: "A merchant category code (MCC), e.g. 5542 for fuel dispensers.",
 };
 

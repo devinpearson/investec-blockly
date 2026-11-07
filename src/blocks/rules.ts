@@ -8,6 +8,7 @@ import {
   type Generators,
   type ValueCode,
 } from "./context";
+import { colours } from "./colours";
 
 // Building blocks for approve/decline rules.
 const PLACEMENT_WARNING =
@@ -19,7 +20,7 @@ export const declineWithReasonBlock = {
   message0: "decline because %1",
   args0: [{ type: "input_value", name: "REASON" }],
   previousStatement: null,
-  colour: 230,
+  colour: colours.decline,
   tooltip:
     "Logs the reason as a warning and declines the transaction. Ends the " +
     "before transaction code.",
@@ -37,7 +38,7 @@ export const nameContainsAnyBlock = {
     },
   ],
   output: "Boolean",
-  colour: 230,
+  colour: colours.condition,
   tooltip:
     "True when the merchant name contains any of these comma-separated " +
     "words. Not case-sensitive.",
@@ -47,7 +48,7 @@ export const isForeignBlock = {
   type: "investec_is_foreign",
   message0: "is a foreign transaction",
   output: "Boolean",
-  colour: 230,
+  colour: colours.condition,
   tooltip:
     "True when the merchant is outside South Africa or the currency is not " +
     "rand.",
@@ -58,7 +59,7 @@ export const envFlagBlock = {
   message0: "env flag %1 is on",
   args0: [{ type: "field_input", name: "NAME", text: "CARD_LOCKED" }],
   output: "Boolean",
-  colour: 290,
+  colour: colours.env,
   tooltip:
     "True when the environment variable is true, on, yes or 1. Flip it in " +
     "Environment variables without editing the blocks.",

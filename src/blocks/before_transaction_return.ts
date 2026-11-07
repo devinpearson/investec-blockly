@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { BEFORE_TRANSACTION, requireHandler } from "./context";
 import type { Generators } from "./context";
+import { colours } from "./colours";
 
 export const investecBeforeTransactionReturnBlock = {
   type: "investec_before_transaction_return",
@@ -16,7 +17,8 @@ export const investecBeforeTransactionReturnBlock = {
     },
   ],
   previousStatement: null,
-  colour: 230,
+  colour: colours.approve,
+  extensions: ["investec_decision_colour"],
   tooltip:
     "Approves or declines the card transaction and stops the before " +
     "transaction code. If nothing is returned the transaction is approved.",
@@ -25,6 +27,21 @@ export const investecBeforeTransactionReturnBlock = {
 export function installBeforeTransactionReturnBlock(
   generators: Generators = {},
 ) {
+  if (!Blockly.Extensions.isRegistered("investec_decision_colour")) {
+    // Green for approve, red for decline, following the dropdown.
+    Blockly.Extensions.register(
+      "investec_decision_colour",
+      function (this: Blockly.Block) {
+        const colourFor = (value: string) =>
+          value === "DECLINE" ? colours.decline : colours.approve;
+        this.setColour(colourFor(this.getFieldValue("VALUE")));
+        this.getField("VALUE")?.setValidator((value: string) => {
+          this.setColour(colourFor(value));
+          return value;
+        });
+      },
+    );
+  }
   Blockly.defineBlocksWithJsonArray([investecBeforeTransactionReturnBlock]);
   requireHandler(
     "investec_before_transaction_return",

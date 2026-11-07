@@ -1,13 +1,14 @@
 import * as Blockly from "blockly/core";
 import type { JavascriptGenerator } from "blockly/javascript";
 import type { Generators } from "./context";
+import { colours } from "./colours";
 
 export const investecCardAfterTransactionBlock = {
   type: "investec_card_after_transaction",
   message0: "after transaction",
   message1: "do %1",
   args1: [{ type: "input_statement", name: "CODE" }],
-  colour: 230,
+  colour: colours.handler,
   tooltip: "Runs after a transaction has been approved. Only one allowed.",
 };
 

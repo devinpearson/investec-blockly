@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 export const CurrencyCode = [
   ["AED", "aed"],
@@ -369,7 +370,7 @@ export const investecCurrenciesBlock = {
     },
   ],
   output: "String",
-  colour: 230,
+  colour: colours.data,
   tooltip: "A currency code in lower case, e.g. zar.",
 };
 

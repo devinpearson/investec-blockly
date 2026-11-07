@@ -3,6 +3,7 @@ import { Order } from "blockly/javascript";
 import { cardFields, cardFieldOptions, type CardField } from "./card_fields";
 import { BEFORE_TRANSACTION, requireHandler } from "./context";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 export const investecAuthValueBlock = {
   type: "investec_auth_value",
@@ -15,7 +16,7 @@ export const investecAuthValueBlock = {
     },
   ],
   output: null,
-  colour: 230,
+  colour: colours.data,
   tooltip: "A field from the authorization passed to beforeTransaction.",
 };
 

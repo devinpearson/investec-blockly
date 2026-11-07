@@ -7,6 +7,7 @@ import {
   type Generators,
   type ValueCode,
 } from "./context";
+import { colours } from "./colours";
 
 // The card runtime provides `fetch`. Its response exposes ok, status,
 // json() and text(). Requests must run inside a handler because the code is
@@ -38,7 +39,7 @@ export const httpRequestBlock = {
   inputsInline: false,
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Calls a URL with fetch. Text bodies are sent as-is; anything else is " +
     "sent as JSON. Headers take an object, e.g. from the bearer token or " +
@@ -72,7 +73,7 @@ export const httpResponseBlock = {
   args2: [{ type: "input_value", name: "HEADERS" }],
   inputsInline: false,
   output: null,
-  colour: 20,
+  colour: colours.http,
   tooltip: "Calls a URL with fetch and returns the response body.",
 };
 
@@ -80,7 +81,7 @@ export const eventObjectBlock = {
   type: "investec_event_object",
   message0: "whole card event",
   output: null,
-  colour: 230,
+  colour: colours.data,
   tooltip:
     "The full authorization (before transaction) or transaction object. " +
     "Put it in a log block to see every field, or use it as a webhook body.",
@@ -94,7 +95,7 @@ export const slackMessageBlock = {
   args1: [{ type: "input_value", name: "URL", check: "String" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Posts a message to a Slack incoming webhook. Keep the webhook URL in " +
     "an environment variable.",
@@ -111,7 +112,7 @@ export const telegramMessageBlock = {
   args2: [{ type: "input_value", name: "CHAT_ID" }],
   previousStatement: null,
   nextStatement: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Sends a message from a Telegram bot. Keep the bot token in an " +
     "environment variable.",
@@ -123,7 +124,7 @@ export const bearerAuthBlock = {
   message0: "bearer token %1",
   args0: [{ type: "input_value", name: "TOKEN", check: "String" }],
   output: null,
-  colour: 20,
+  colour: colours.http,
   tooltip:
     "Headers with Authorization: Bearer <token>, for the request blocks' " +
     "headers input. Keep the token in an environment variable.",

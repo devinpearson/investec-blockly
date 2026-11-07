@@ -2,6 +2,7 @@ import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import type { JavascriptGenerator } from "blockly/javascript";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 // The card runtime exposes environment variables on process.env. In the
 // simulator they come from the Environment Variables section of the panel.
@@ -21,7 +22,7 @@ export const envBlock = {
     },
   ],
   output: null,
-  colour: 290,
+  colour: colours.env,
   tooltip:
     "An environment variable (process.env). Use these for secrets such as " +
     "webhook URLs and tokens so they are not saved in the blocks. Values " +

@@ -3,6 +3,7 @@ import { Order } from "blockly/javascript";
 import { cardFields, cardFieldOptions, type CardField } from "./card_fields";
 import { AFTER_DECLINE, AFTER_TRANSACTION, requireHandler } from "./context";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 export const investecTransBlock = {
   type: "investec_trans_value",
@@ -16,7 +17,7 @@ export const investecTransBlock = {
     },
   ],
   output: null,
-  colour: 230,
+  colour: colours.data,
   tooltip:
     "A field from the transaction passed to afterTransaction / afterDecline.",
 };

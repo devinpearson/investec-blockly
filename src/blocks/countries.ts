@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import type { Generators, ValueCode } from "./context";
+import { colours } from "./colours";
 
 export const countries = [
   {
@@ -1263,7 +1264,7 @@ export const investecCountriesBlock = {
     },
   ],
   output: "String",
-  colour: 230,
+  colour: colours.data,
   tooltip: "A country code (ISO 3166 alpha-2), e.g. ZA.",
 };
 

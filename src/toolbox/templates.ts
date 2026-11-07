@@ -25,6 +25,7 @@ import {
   whatsApp,
   type BlockState,
 } from "../blockly/snippets";
+import { categoryColours } from "../blocks/colours";
 
 const label = (text: string) => ({ kind: "label", text });
 const block = (state: BlockState) => ({ kind: "block", ...state });
@@ -32,7 +33,7 @@ const block = (state: BlockState) => ({ kind: "block", ...state });
 export const templates = {
   kind: "category",
   name: "Templates",
-  colour: "#6366F1",
+  colour: categoryColours.templates,
   contents: [
     label("Any handler: inspect"),
     label("Log the whole card event (authorization / transaction)"),

@@ -1,3 +1,4 @@
+import { categoryColours } from "../blocks/colours";
 const text = (value: string) => ({
   shadow: { type: "text", fields: { TEXT: value } },
 });
@@ -19,7 +20,7 @@ const eventValue = (field: string) => ({
 export const http = {
   kind: "category",
   name: "HTTP",
-  colour: "#A6745C",
+  colour: categoryColours.http,
   contents: [
     {
       kind: "block",
