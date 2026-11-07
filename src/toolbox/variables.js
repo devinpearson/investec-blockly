@@ -1,6 +1,6 @@
 export const variables = {
-    "kind":"category",
-    "name":"Variables",
-    "categorystyle":"variable_category",
-    "custom":"VARIABLE"
-  }
+  kind: "category",
+  name: "Variables",
+  categorystyle: "variable_category",
+  custom: "VARIABLE",
+};

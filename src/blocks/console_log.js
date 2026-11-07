@@ -7,8 +7,8 @@ export const investecConsoleLogBlock = {
   args0: [
     {
       type: "input_value",
+      // No type check: logging numbers (e.g. cents amount) is common.
       name: "VALUE",
-      check: "String",
     },
   ],
   previousStatement: null,
@@ -26,6 +26,6 @@ export function installConsoleLogBlock(generators = {}) {
 }
 
 const consoleLogGenerator = function (block, generator) {
-  const value = generator.valueToCode(block, "VALUE", Order.ATOMIC);
-  return `console.log(${value})\n`; // Simplified returns as well.
+  const value = generator.valueToCode(block, "VALUE", Order.NONE) || "''";
+  return `console.log(${value});\n`;
 };

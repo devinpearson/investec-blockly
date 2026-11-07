@@ -40,3 +40,20 @@ export {
 // add blockly component to send slack messages
 // add blockly component to call webhooks
 // add blockly component to upload to google sheets
+
+/**
+ * Registers every custom Investec block and its code generators.
+ * @param {{javascript?: object}} generators
+ */
+export function installBlocks(generators = {}) {
+  installConsoleLogBlock(generators);
+  installTransBlock(generators);
+  installAuthValueBlock(generators);
+  installAfterTransactionBlock(generators);
+  installBeforeTransactionBlock(generators);
+  installAfterDeclineBlock(generators);
+  installBeforeTransactionReturnBlock(generators);
+  installCountriesBlock(generators);
+  installMerchantBlock(generators);
+  installCurrenciesBlock(generators);
+}

@@ -29,7 +29,12 @@ npm install
 ```
 
 You will need to run [investec-card-server](https://github.com/devinpearson/investec-card-server)
-in order to run the project.
+in order to run the project. It is expected at `http://localhost:3010`; to use a
+different address, set `VITE_SIMULATOR_URL` in a `.env.local` file:
+
+```sh
+VITE_SIMULATOR_URL=http://localhost:3010
+```
 
 ### Compile and Hot-Reload for Development
 

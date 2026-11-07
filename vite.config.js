@@ -35,7 +35,7 @@ export default defineConfig({
       targets: [
         {
           src: fileURLToPath(
-            new URL("./node_modules/blockly/media/*", import.meta.url)
+            new URL("./node_modules/blockly/media/*", import.meta.url),
           ),
           dest: "media",
         },

@@ -10,24 +10,37 @@
  * @author dcoodien@gmail.com (Dylan Coodien)
  */
 
-import { onMounted, ref, shallowRef } from "vue";
-import Blockly from "blockly";
+import { onBeforeUnmount, onMounted, ref, shallowRef } from "vue";
+// The full package (not blockly/core) registers the built-in blocks and messages.
+import * as Blockly from "blockly";
 import Theme from "@blockly/theme-modern";
 
-const props = defineProps(["options"]);
+const props = defineProps({ options: { type: Object, default: () => ({}) } });
 const blocklyToolbox = ref();
 const blocklyDiv = ref();
 const workspace = shallowRef();
+let resizeObserver;
 
 defineExpose({ workspace });
 
 onMounted(() => {
-  const options = props.options || {};
-  options.theme = options.theme || Theme;
+  // Copy so we don't mutate the parent's options object.
+  const options = { theme: Theme, ...props.options };
   if (!options.toolbox) {
     options.toolbox = blocklyToolbox.value;
   }
   workspace.value = Blockly.inject(blocklyDiv.value, options);
+
+  // Keep the SVG sized to its container when the layout changes.
+  resizeObserver = new ResizeObserver(() => {
+    if (workspace.value) Blockly.svgResize(workspace.value);
+  });
+  resizeObserver.observe(blocklyDiv.value);
+});
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  workspace.value?.dispose();
 });
 </script>
 
@@ -39,10 +52,3 @@ onMounted(() => {
     </xml>
   </div>
 </template>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-svg[display="none"] {
-  display: none;
-}
-</style>
