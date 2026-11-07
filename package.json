@@ -3,31 +3,43 @@
   "version": "1.0.0",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 4173",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write ."
   },
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "dependencies": {
     "@blockly/theme-modern": "^5.0.5",
-    "@headlessui/vue": "^1.7.19",
-    "@heroicons/vue": "^2.1.1",
+    "@heroicons/react": "^2.2.0",
     "@tailwindcss/forms": "^0.5.7",
-    "blockly": "^10.0.0",
+    "blockly": "^10.4.3",
     "highlight.js": "^11.9.0",
-    "vue": "^3.4"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.1.0",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/eslint-config-prettier": "^9.0.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
     "autoprefixer": "^10.4.17",
-    "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.23.0",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.14.0",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
-    "vite": "^6.0.3",
-    "vite-plugin-static-copy": "^2.2.0"
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.6",
+    "vite-plugin-static-copy": "^4.1.1"
   }
 }

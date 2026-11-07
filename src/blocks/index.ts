@@ -1,0 +1,78 @@
+/**
+ * @license
+ * Copyright 2023 Devin Pearson
+ * SPDX-License-Identifier: MIT
+ */
+
+/**
+ * @fileoverview Define custom blocks.
+ * @author devin@blackhat.co.za
+ */
+
+// More on defining blocks:
+// https://developers.google.com/blockly/guides/create-custom-blocks/define-blocks
+
+import { installConsoleLogBlock } from "./console_log";
+import type { Generators } from "./context";
+import { installTransBlock } from "./dropdown_investec_trans";
+import { installAuthValueBlock } from "./dropdown_auth_value";
+import { installAfterTransactionBlock } from "./after_transaction";
+import { installBeforeTransactionBlock } from "./before_transaction";
+import { installAfterDeclineBlock } from "./after_decline";
+import { installBeforeTransactionReturnBlock } from "./before_transaction_return";
+import { installCountriesBlock } from "./countries";
+import { installMerchantBlock } from "./merchants";
+import { installCurrenciesBlock } from "./currencies";
+import { installHttpBlocks } from "./http";
+import { installEnvBlock } from "./env";
+import { installDateTimeBlocks } from "./datetime";
+import { installCardBlocks } from "./card";
+import { installObjectBlocks } from "./objects";
+import { installRuleBlocks } from "./rules";
+import { installIntegrationBlocks } from "./integrations";
+
+export {
+  installConsoleLogBlock,
+  installTransBlock,
+  installAuthValueBlock,
+  installAfterTransactionBlock,
+  installBeforeTransactionBlock,
+  installAfterDeclineBlock,
+  installBeforeTransactionReturnBlock,
+  installCountriesBlock,
+  installMerchantBlock,
+  installCurrenciesBlock,
+  installHttpBlocks,
+  installEnvBlock,
+  installDateTimeBlocks,
+  installCardBlocks,
+  installObjectBlocks,
+  installRuleBlocks,
+  installIntegrationBlocks,
+};
+
+// TODO: block to upload to Google Sheets.
+
+/**
+ * Registers every custom Investec block and its code generators.
+ * @param {{javascript?: object}} generators
+ */
+export function installBlocks(generators: Generators = {}) {
+  installConsoleLogBlock(generators);
+  installTransBlock(generators);
+  installAuthValueBlock(generators);
+  installAfterTransactionBlock(generators);
+  installBeforeTransactionBlock(generators);
+  installAfterDeclineBlock(generators);
+  installBeforeTransactionReturnBlock(generators);
+  installCountriesBlock(generators);
+  installMerchantBlock(generators);
+  installCurrenciesBlock(generators);
+  installHttpBlocks(generators);
+  installEnvBlock(generators);
+  installDateTimeBlocks(generators);
+  installCardBlocks(generators);
+  installObjectBlocks(generators);
+  installRuleBlocks(generators);
+  installIntegrationBlocks(generators);
+}
