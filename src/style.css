@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Blockly hides some SVG elements with a display attribute. */
+svg[display="none"] {
+  display: none;
+}

@@ -1,6 +1,7 @@
 # investec-blockly
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 A basic example of blockly with blocks created specifically for Investec programmable card.
+Built with React, TypeScript and Vite.
 
 Blocks available:
 - `before transaction` - creates the beforeTransaction function
@@ -31,13 +32,9 @@ Date & Time (uses `moment`, in SAST or UTC):
 The before transaction, after transaction and after decline blocks can each be
 used once per workspace.
 
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
 ## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+See [Vite Configuration Reference](https://vite.dev/config/).
 
 ## Project Setup
 
@@ -65,8 +62,10 @@ npm run start
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Type-check, lint and format
 
 ```sh
+npm run typecheck
 npm run lint
+npm run format
 ```
