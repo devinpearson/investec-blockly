@@ -6,6 +6,9 @@ export const investecCardBeforeTransactionBlock = {
   message1: "do %1",
   args1: [{ type: "input_statement", name: "CODE" }],
   colour: 230,
+  tooltip:
+    "Runs before the card transaction is approved. Return approve or decline; " +
+    "if nothing is returned the transaction is approved. Only one allowed.",
 };
 
 export function installBeforeTransactionBlock(generators = {}) {
@@ -13,7 +16,6 @@ export function installBeforeTransactionBlock(generators = {}) {
   if (generators.javascript) {
     generators.javascript.forBlock["investec_card_before_transaction"] =
       beforeTransactionGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

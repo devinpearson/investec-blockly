@@ -369,13 +369,13 @@ export const investecCurrenciesBlock = {
   ],
   output: "String",
   colour: 230,
+  tooltip: "A currency code in lower case, e.g. zar.",
 };
 
 export function installCurrenciesBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecCurrenciesBlock]);
   if (generators.javascript) {
     generators.javascript.forBlock["investec_currencies"] = currenciesGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

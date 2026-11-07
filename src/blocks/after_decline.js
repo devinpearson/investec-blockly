@@ -6,6 +6,7 @@ export const investecAfterDeclineBlock = {
   message1: "do %1",
   args1: [{ type: "input_statement", name: "CODE" }],
   colour: 230,
+  tooltip: "Runs after a transaction has been declined. Only one allowed.",
 };
 
 export function installAfterDeclineBlock(generators = {}) {
@@ -13,7 +14,6 @@ export function installAfterDeclineBlock(generators = {}) {
   if (generators.javascript) {
     generators.javascript.forBlock["investec_card_after_decline"] =
       afterDeclineGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

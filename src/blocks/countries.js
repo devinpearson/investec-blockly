@@ -1263,13 +1263,13 @@ export const investecCountriesBlock = {
   ],
   output: "String",
   colour: 230,
+  tooltip: "A country code (ISO 3166 alpha-2), e.g. ZA.",
 };
 
 export function installCountriesBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecCountriesBlock]);
   if (generators.javascript) {
     generators.javascript.forBlock["investec_countries"] = countriesGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

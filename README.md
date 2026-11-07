@@ -8,11 +8,28 @@ Blocks available:
 - `after decline` - creates the afterDecline function
 - `authorization` - the fields available from the authorization object
 - `transaction` - the fields available from the transaction object
-- `log` - creates a log statment
+- `log` - creates a log statement at info, warning or error level
 - `approve` - creates a return transaction for the beforeTransaction function
 - `countries` - a list of countries
 - `currency` - a list of currencies
 - `merchants` - a list of merchants
+
+HTTP (uses `fetch`, only inside the before/after/decline blocks):
+- `send request` - calls a URL; text bodies are sent as-is, anything else as JSON
+- `response` - calls a URL and returns the response as JSON or text
+- `whole card event` - the full authorization/transaction object, e.g. as a webhook body
+- `send Slack message` - posts to a Slack incoming webhook
+- `send Telegram message` - sends a message from a Telegram bot
+- `env` - reads an environment variable (`process.env`); set values in the
+  Environment Variables section of the simulator panel
+
+Date & Time (uses `moment`, in SAST or UTC):
+- `transaction hour / minute / day of week / ...` - part of the transaction time
+- `transaction is on a weekend`
+- `transaction time is between` - a time range, which may cross midnight
+
+The before transaction, after transaction and after decline blocks can each be
+used once per workspace.
 
 ## Recommended IDE Setup
 

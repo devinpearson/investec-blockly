@@ -1,6 +1,7 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import OutputComponent from "./OutputComponent.vue";
+import EnvironmentComponent from "./EnvironmentComponent.vue";
 
 const outputRef = defineModel("outputRef");
 defineProps({ running: Boolean, error: String });
@@ -29,8 +30,15 @@ const fields = [
   { name: "merchantCountry", label: "Merchant Country", placeholder: "ZA" },
 ];
 
+const environment = ref([]);
+
 const onSubmit = () => {
-  emit("onSimulate", { ...transaction });
+  const environmentVariables = Object.fromEntries(
+    environment.value
+      .filter((row) => row.name)
+      .map((row) => [row.name, row.value]),
+  );
+  emit("onSimulate", { ...transaction }, environmentVariables);
 };
 </script>
 
@@ -75,6 +83,7 @@ const onSubmit = () => {
               class="mt-1 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             />
           </div>
+          <environment-component v-model="environment"></environment-component>
           <button
             type="submit"
             :disabled="running"

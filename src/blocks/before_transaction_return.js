@@ -1,4 +1,5 @@
 import * as Blockly from "blockly/core";
+import { BEFORE_TRANSACTION, requireHandler } from "./context";
 
 export const investecBeforeTransactionReturnBlock = {
   type: "investec_before_transaction_return",
@@ -15,14 +16,21 @@ export const investecBeforeTransactionReturnBlock = {
   ],
   previousStatement: null,
   colour: 230,
+  tooltip:
+    "Approves or declines the card transaction and stops the before " +
+    "transaction code. If nothing is returned the transaction is approved.",
 };
 
 export function installBeforeTransactionReturnBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecBeforeTransactionReturnBlock]);
+  requireHandler(
+    "investec_before_transaction_return",
+    [BEFORE_TRANSACTION],
+    "Approve/decline only has an effect inside a before transaction block.",
+  );
   if (generators.javascript) {
     generators.javascript.forBlock["investec_before_transaction_return"] =
       beforeTransactionReturnGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

@@ -16,6 +16,8 @@ import { examples } from "./examples";
 import { useResizable } from "./composables/useResizable";
 import {
   InvestecToolbox,
+  HttpToolbox,
+  DateTimeToolbox,
   LogicToolbox,
   LoopsToolbox,
   MathToolbox,
@@ -68,6 +70,12 @@ const onWindowResize = () => {
 
 const options = {
   media: "media/",
+  // Each handler can only be defined once (it becomes a const in the code).
+  maxInstances: {
+    investec_card_before_transaction: 1,
+    investec_card_after_transaction: 1,
+    investec_card_after_decline: 1,
+  },
   grid: {
     spacing: 25,
     length: 3,
@@ -78,6 +86,8 @@ const options = {
     kind: "categoryToolbox",
     contents: [
       InvestecToolbox,
+      HttpToolbox,
+      DateTimeToolbox,
       LogicToolbox,
       LoopsToolbox,
       MathToolbox,
@@ -104,7 +114,7 @@ function storageKey(name) {
   return STORAGE_PREFIX + name;
 }
 
-async function runCode(transaction) {
+async function runCode(transaction, environmentVariables = {}) {
   // Generate the code with an infinite-loop guard. The trap is evaluated by
   // the simulator, so it must not depend on browser globals like `window`.
   javascriptGenerator.INFINITE_LOOP_TRAP =
@@ -124,7 +134,11 @@ async function runCode(transaction) {
     const response = await fetch(`${SIMULATOR_URL}/simulate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transaction, code: encodeURI(source) }),
+      body: JSON.stringify({
+        transaction,
+        environmentVariables,
+        code: encodeURI(source),
+      }),
     });
     if (!response.ok) {
       throw new Error(`Simulator returned ${response.status}`);

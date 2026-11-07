@@ -322,13 +322,13 @@ export const investecMerchantBlock = {
   ],
   output: "String",
   colour: 230,
+  tooltip: "A merchant category code (MCC), e.g. 5542 for fuel dispensers.",
 };
 
 export function installMerchantBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecMerchantBlock]);
   if (generators.javascript) {
     generators.javascript.forBlock["investec_merchants"] = merchantGenerator;
-    // generators.javascript.addReservedWords("specialReservedWord");
   }
 }
 

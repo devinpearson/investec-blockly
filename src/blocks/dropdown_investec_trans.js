@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import { cardFields, cardFieldOptions } from "./card_fields";
+import { AFTER_DECLINE, AFTER_TRANSACTION, requireHandler } from "./context";
 
 export const investecTransBlock = {
   type: "investec_trans_value",
@@ -21,6 +22,12 @@ export const investecTransBlock = {
 
 export function installTransBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecTransBlock]);
+  requireHandler(
+    "investec_trans_value",
+    [AFTER_TRANSACTION, AFTER_DECLINE],
+    "transaction is only available inside after transaction / after " +
+      "decline. Use the authorization block in before transaction.",
+  );
   if (generators.javascript) {
     generators.javascript.forBlock["investec_trans_value"] =
       transactionValueGenerator;

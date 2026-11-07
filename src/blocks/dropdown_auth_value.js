@@ -1,6 +1,7 @@
 import * as Blockly from "blockly/core";
 import { Order } from "blockly/javascript";
 import { cardFields, cardFieldOptions } from "./card_fields";
+import { BEFORE_TRANSACTION, requireHandler } from "./context";
 
 export const investecAuthValueBlock = {
   type: "investec_auth_value",
@@ -19,6 +20,12 @@ export const investecAuthValueBlock = {
 
 export function installAuthValueBlock(generators = {}) {
   Blockly.defineBlocksWithJsonArray([investecAuthValueBlock]);
+  requireHandler(
+    "investec_auth_value",
+    [BEFORE_TRANSACTION],
+    "authorization is only available inside a before transaction block. " +
+      "Use the transaction block in after transaction / after decline.",
+  );
   if (generators.javascript) {
     generators.javascript.forBlock["investec_auth_value"] =
       authorizationValueGenerator;

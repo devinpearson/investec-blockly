@@ -22,6 +22,9 @@ import { installBeforeTransactionReturnBlock } from "./before_transaction_return
 import { installCountriesBlock } from "./countries";
 import { installMerchantBlock } from "./merchants";
 import { installCurrenciesBlock } from "./currencies";
+import { installHttpBlocks } from "./http";
+import { installEnvBlock } from "./env";
+import { installDateTimeBlocks } from "./datetime";
 
 export {
   installConsoleLogBlock,
@@ -34,12 +37,12 @@ export {
   installCountriesBlock,
   installMerchantBlock,
   installCurrenciesBlock,
+  installHttpBlocks,
+  installEnvBlock,
+  installDateTimeBlocks,
 };
 
-// add blockly component to send telegram messages
-// add blockly component to send slack messages
-// add blockly component to call webhooks
-// add blockly component to upload to google sheets
+// TODO: block to upload to Google Sheets.
 
 /**
  * Registers every custom Investec block and its code generators.
@@ -56,4 +59,7 @@ export function installBlocks(generators = {}) {
   installCountriesBlock(generators);
   installMerchantBlock(generators);
   installCurrenciesBlock(generators);
+  installHttpBlocks(generators);
+  installEnvBlock(generators);
+  installDateTimeBlocks(generators);
 }
