@@ -16,6 +16,11 @@ export const investec = {
     { kind: "block", type: "investec_before_transaction_return" },
     {
       kind: "block",
+      type: "investec_decline_with_reason",
+      inputs: { REASON: text("Declined") },
+    },
+    {
+      kind: "block",
       type: "investec_console_log",
       inputs: { VALUE: text("hello") },
     },
@@ -24,6 +29,9 @@ export const investec = {
     { kind: "block", type: "investec_amount_compare" },
     { kind: "block", type: "investec_amount_rands" },
     { kind: "block", type: "investec_merchant_group" },
+    { kind: "block", type: "investec_merchant_name_contains_any" },
+    { kind: "block", type: "investec_is_foreign" },
+    { kind: "block", type: "investec_format_amount" },
     { kind: "sep" },
     { kind: "block", type: "investec_currencies" },
     { kind: "block", type: "investec_merchants" },

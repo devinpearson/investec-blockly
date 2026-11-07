@@ -138,7 +138,7 @@ const httpBlocks = [
   bearerAuthBlock,
 ];
 
-function provideSendRequest(generator: JavascriptGenerator): string {
+export function provideSendRequest(generator: JavascriptGenerator): string {
   return generator.provideFunction_(
     "sendRequest",
     `async function ${generator.FUNCTION_NAME_PLACEHOLDER_}(method, url, body, headers) {

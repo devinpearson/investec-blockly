@@ -103,11 +103,21 @@ export const weekdayIsBlock = {
   tooltip: "True when the transaction happens on the chosen day.",
 };
 
+export const timeTextBlock = {
+  type: "investec_time_text",
+  message0: "transaction time as text in %1",
+  args0: [zoneArg],
+  output: "String",
+  colour: 160,
+  tooltip: "The transaction date and time for messages, e.g. Sat 7 Nov 14:32.",
+};
+
 const datetimeBlocks = [
   timePartBlock,
   weekendBlock,
   weekdayIsBlock,
   timeBetweenBlock,
+  timeTextBlock,
 ];
 
 function momentCode(block: Blockly.Block): string {
@@ -131,6 +141,12 @@ const generators: Record<
   },
   investec_time_is_weekend(block) {
     return [`${momentCode(block)}.isoWeekday() >= 6`, Order.RELATIONAL];
+  },
+  investec_time_text(block) {
+    return [
+      `${momentCode(block)}.format('ddd D MMM HH:mm')`,
+      Order.FUNCTION_CALL,
+    ];
   },
   investec_time_weekday_is(block) {
     const day = Number(block.getFieldValue("DAY"));

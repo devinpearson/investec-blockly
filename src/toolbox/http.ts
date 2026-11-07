@@ -61,6 +61,28 @@ export const http = {
     { kind: "sep" },
     {
       kind: "block",
+      type: "investec_webhook_send",
+      inputs: {
+        URL: env("MAKE_WEBHOOK_URL"),
+        DATA: { block: { type: "investec_event_object" } },
+      },
+    },
+    {
+      kind: "block",
+      type: "investec_airtable_add_record",
+      inputs: {
+        BASE: env("AIRTABLE_BASE"),
+        TABLE: text("Transactions"),
+        TOKEN: env("AIRTABLE_TOKEN"),
+      },
+    },
+    {
+      kind: "block",
+      type: "investec_ntfy_push",
+      inputs: { MESSAGE: text("Card used"), TOPIC: env("NTFY_TOPIC") },
+    },
+    {
+      kind: "block",
       type: "investec_slack_message",
       inputs: { TEXT: text("Card transaction"), URL: env("SLACK_WEBHOOK_URL") },
     },
@@ -75,5 +97,6 @@ export const http = {
     },
     { kind: "sep" },
     { kind: "block", type: "investec_env" },
+    { kind: "block", type: "investec_env_flag" },
   ],
 };

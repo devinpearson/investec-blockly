@@ -28,6 +28,8 @@ import { installEnvBlock } from "./env";
 import { installDateTimeBlocks } from "./datetime";
 import { installCardBlocks } from "./card";
 import { installObjectBlocks } from "./objects";
+import { installRuleBlocks } from "./rules";
+import { installIntegrationBlocks } from "./integrations";
 
 export {
   installConsoleLogBlock,
@@ -45,6 +47,8 @@ export {
   installDateTimeBlocks,
   installCardBlocks,
   installObjectBlocks,
+  installRuleBlocks,
+  installIntegrationBlocks,
 };
 
 // TODO: block to upload to Google Sheets.
@@ -69,4 +73,6 @@ export function installBlocks(generators: Generators = {}) {
   installDateTimeBlocks(generators);
   installCardBlocks(generators);
   installObjectBlocks(generators);
+  installRuleBlocks(generators);
+  installIntegrationBlocks(generators);
 }

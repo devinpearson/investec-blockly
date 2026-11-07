@@ -7,5 +7,6 @@ export const datetime = {
     { kind: "block", type: "investec_time_is_weekend" },
     { kind: "block", type: "investec_time_weekday_is" },
     { kind: "block", type: "investec_time_between" },
+    { kind: "block", type: "investec_time_text" },
   ],
 };

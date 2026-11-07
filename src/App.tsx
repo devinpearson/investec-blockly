@@ -202,7 +202,7 @@ export default function App() {
       }
       const example = examples[DEFAULT_EXAMPLE];
       if (example) {
-        loadState(example);
+        loadState(example.state);
         setSource(`example:${DEFAULT_EXAMPLE}`);
       }
     },
@@ -231,9 +231,8 @@ export default function App() {
   function open(next: WorkspaceSource) {
     if (!confirmReplace()) return;
     const name = sourceName(next);
-    const state = next.startsWith("example:")
-      ? (examples[name] as WorkspaceState | undefined)
-      : readSaved(name);
+    const example = next.startsWith("example:") ? examples[name] : undefined;
+    const state = example ? example.state : readSaved(name);
     if (!state) {
       notify(`Could not open "${name}".`, "error");
       return;
@@ -241,7 +240,26 @@ export default function App() {
     try {
       loadState(state);
       setSource(next);
-      notify(`Opened "${name}".`);
+      // Add the variables the example reads, keeping any values already set.
+      const needed = example?.env ?? [];
+      const missing = needed.filter(
+        (variable) => !environment.some((row) => row.name === variable),
+      );
+      if (missing.length) {
+        setEnvironment([
+          ...environment,
+          ...missing.map((variable) => ({ name: variable, value: "" })),
+        ]);
+      }
+      const unset = needed.filter(
+        (variable) => !environment.find((row) => row.name === variable)?.value,
+      );
+      notify(
+        unset.length
+          ? `Opened "${name}". Set ${unset.join(", ")} under Environment variables.`
+          : `Opened "${name}".`,
+        unset.length ? "info" : "success",
+      );
     } catch (e) {
       notify(`"${name}" could not be loaded: ${(e as Error).message}`, "error");
     }
