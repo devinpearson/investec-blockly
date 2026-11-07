@@ -7,6 +7,7 @@ const AUTOSAVE_KEY = STORAGE_PREFIX + "autosave";
 // Keys under the prefix that hold settings rather than saved workspaces.
 const RESERVED = new Set([
   "autosave",
+  "autosaveSource",
   "editorHeight",
   "panelWidth",
   "toolboxVisible",

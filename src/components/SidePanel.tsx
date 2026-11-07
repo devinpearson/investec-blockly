@@ -5,19 +5,22 @@ import {
   type ReactNode,
 } from "react";
 
-export type PanelTab = "transaction" | "results" | "code";
+export type PanelTab = "guide" | "transaction" | "results" | "code";
 
 type Props = {
   tab: PanelTab;
   onTabChange: (tab: PanelTab) => void;
   /** Small marker next to the Results tab, e.g. after a new run. */
   resultsBadge?: ReactNode;
+  /** Show the Guide tab (while an example with a write-up is open). */
+  showGuide?: boolean;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
 
-const tabs: { id: PanelTab; label: string }[] = [
+const allTabs: { id: PanelTab; label: string }[] = [
+  { id: "guide", label: "Guide" },
   { id: "transaction", label: "Transaction" },
   { id: "results", label: "Results" },
   { id: "code", label: "Code" },
@@ -27,10 +30,12 @@ export function SidePanel({
   tab,
   onTabChange,
   resultsBadge,
+  showGuide = false,
   children,
   className = "",
   style,
 }: Props) {
+  const tabs = allTabs.filter((t) => showGuide || t.id !== "guide");
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Arrow keys move between tabs (WAI-ARIA tabs pattern).

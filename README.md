@@ -54,10 +54,13 @@ Date & Time (uses `moment`, in SAST or UTC):
 - `transaction time is between` - a time range, which may cross midnight
 - `transaction time as text` - e.g. `Sat 7 Nov 14:32`
 
-Examples (Open… menu): Teen Card, Travel Mode, Expense Log (Airtable),
-Make.com Automation and Remote Kill Switch, alongside the original ones. Each
-carries setup notes on its first handler (the ? icon) and adds the environment
-variables it needs to the panel when opened.
+Examples (Open… menu): Default, Petrol Card, Amount, After Hours, Teen Card,
+Travel Mode, Expense Log (Airtable), Make.com Automation and Remote Kill
+Switch. Opening one shows its Guide tab: what the blocks do step by step,
+what happens behind the scenes when you press Run, the setup it needs (with
+which environment variables are still missing), and "Try it" transactions
+that fill in the form and run with one click. The write-ups live in
+`src/examples/guides.ts`.
 
 The older `authorization:` and `transaction:` blocks still load in saved
 workspaces; `card event` replaces both.

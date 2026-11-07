@@ -14,6 +14,7 @@ import {
 
 import { BlocklyWorkspace } from "./components/BlocklyWorkspace";
 import { CodeView } from "./components/CodeView";
+import { GuideView } from "./components/GuideView";
 import type { EnvironmentRow } from "./components/EnvironmentEditor";
 import { Header, type WorkspaceSource } from "./components/Header";
 import { ResizeHandle } from "./components/ResizeHandle";
@@ -26,7 +27,7 @@ import { usePrefersDark } from "./hooks/usePrefersDark";
 import { useResizable } from "./hooks/useResizable";
 import { useToasts } from "./hooks/useToasts";
 import { installBlocks } from "./blocks";
-import { examples } from "./examples";
+import { examples, type Scenario } from "./examples";
 import {
   defaultTransaction,
   simulate,
@@ -69,6 +70,8 @@ const exampleNames = Object.keys(examples);
 const DEFAULT_EXAMPLE = "Petrol Card";
 const AUTOSAVE_DELAY_MS = 500;
 const TOOLBOX_KEY = STORAGE_PREFIX + "toolboxVisible";
+// Which example or saved workspace the autosave came from, for its guide.
+const SOURCE_KEY = STORAGE_PREFIX + "autosaveSource";
 
 /** Remembered choice, else shown except on phone-sized screens. */
 function initialToolboxVisible(): boolean {
@@ -147,9 +150,10 @@ export default function App() {
   const [saved, setSaved] = useState(listSaved);
   const [code, setCode] = useState("");
   const [tab, setTab] = useState<PanelTab>("transaction");
-  const [transaction, setTransaction] =
+  const [currentTransaction, setTransaction] =
     useState<TransactionInput>(defaultTransaction);
-  const [environment, setEnvironment] = useState<EnvironmentRow[]>([]);
+  const [currentEnvironment, setEnvironment] = useState<EnvironmentRow[]>([]);
+  const environment = currentEnvironment;
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [output, setOutput] = useState<ExecutionItem[] | null>(null);
@@ -195,6 +199,10 @@ export default function App() {
       if (autosave) {
         try {
           loadState(autosave);
+          const saved = readStorage(SOURCE_KEY) ?? "";
+          if (/^(example|saved):/.test(saved)) {
+            setSource(saved as WorkspaceSource);
+          }
           return;
         } catch {
           // A broken autosave falls through to the default example.
@@ -204,12 +212,24 @@ export default function App() {
       if (example) {
         loadState(example.state);
         setSource(`example:${DEFAULT_EXAMPLE}`);
+        // First visit: start with the write-up.
+        if (example.guide) setTab("guide");
       }
     },
     [loadState],
   );
 
   useEffect(() => () => window.clearTimeout(autosaveTimer.current), []);
+  useEffect(() => {
+    writeStorage(SOURCE_KEY, source);
+  }, [source]);
+
+  // The open example's write-up, if it has one.
+  const currentExample = source.startsWith("example:")
+    ? examples[sourceName(source)]
+    : undefined;
+  const guide = currentExample?.guide;
+  const activeTab: PanelTab = tab === "guide" && !guide ? "transaction" : tab;
 
   function toggleToolbox() {
     const visible = !toolboxVisible;
@@ -240,6 +260,7 @@ export default function App() {
     try {
       loadState(state);
       setSource(next);
+      if (example?.guide) setTab("guide");
       // Add the variables the example reads, keeping any values already set.
       const needed = example?.env ?? [];
       const missing = needed.filter(
@@ -315,7 +336,10 @@ export default function App() {
     setSource("");
   }
 
-  async function run() {
+  async function run(
+    transaction: TransactionInput = currentTransaction,
+    environment: EnvironmentRow[] = currentEnvironment,
+  ) {
     const workspace = workspaceRef.current;
     if (!workspace || running) return;
     const invalid = validateTransaction(transaction);
@@ -352,6 +376,20 @@ export default function App() {
     }
   }
 
+  /** Fills in the guide's scenario and runs it. */
+  function runScenario(scenario: Scenario) {
+    const next = { ...defaultTransaction, ...scenario.transaction };
+    let rows = environment;
+    for (const [name, value] of Object.entries(scenario.env ?? {})) {
+      rows = rows.some((row) => row.name === name)
+        ? rows.map((row) => (row.name === name ? { ...row, value } : row))
+        : [...rows, { name, value }];
+    }
+    setTransaction(next);
+    setEnvironment(rows);
+    void run(next, rows);
+  }
+
   // Cmd/Ctrl+Enter runs from anywhere on the page.
   const onShortcut = useEffectEvent((event: KeyboardEvent) => {
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
@@ -370,7 +408,7 @@ export default function App() {
     (item) => item.type === "before_transaction",
   )?.authorizationApproved;
   const resultsBadge =
-    tab === "results" ? null : output ? (
+    activeTab === "results" ? null : output ? (
       <span
         className={`size-2 rounded-full ${approved ? "bg-emerald-500" : "bg-red-500"}`}
         aria-label={approved ? "approved" : "declined"}
@@ -412,15 +450,27 @@ export default function App() {
           className="hidden border-l border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex"
         />
         <SidePanel
-          tab={tab}
+          tab={activeTab}
           onTabChange={setTab}
           resultsBadge={resultsBadge}
+          showGuide={Boolean(guide)}
           className="border-t lg:w-[var(--panel-width)] lg:shrink-0 lg:border-t-0"
           style={{ "--panel-width": `${panel.size}px` } as CSSProperties}
         >
-          {tab === "transaction" && (
+          {activeTab === "guide" && guide && (
+            <GuideView
+              name={sourceName(source)}
+              guide={guide}
+              envNames={currentExample?.env ?? []}
+              environment={environment}
+              running={running}
+              onRunScenario={runScenario}
+              onShowEnvironment={() => setTab("transaction")}
+            />
+          )}
+          {activeTab === "transaction" && (
             <TransactionForm
-              transaction={transaction}
+              transaction={currentTransaction}
               onTransactionChange={setTransaction}
               environment={environment}
               onEnvironmentChange={setEnvironment}
@@ -428,10 +478,10 @@ export default function App() {
               onRun={() => void run()}
             />
           )}
-          {tab === "results" && (
+          {activeTab === "results" && (
             <ResultsView items={output} transaction={outputFor} error={error} />
           )}
-          {tab === "code" && (
+          {activeTab === "code" && (
             <CodeView code={code} onCopied={() => notify("Code copied.")} />
           )}
         </SidePanel>
