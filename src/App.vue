@@ -1,6 +1,6 @@
 <script setup>
 import "./style.css";
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import * as Blockly from "blockly/core";
 import { javascriptGenerator } from "blockly/javascript";
 import hljs from "highlight.js/lib/core";
@@ -13,6 +13,7 @@ import ButtonComponent from "./components/ButtonComponent.vue";
 import DropDownComponent from "./components/DropDownComponent.vue";
 import { installBlocks } from "./blocks";
 import { examples } from "./examples";
+import { useResizable } from "./composables/useResizable";
 import {
   InvestecToolbox,
   LogicToolbox,
@@ -43,6 +44,27 @@ const status = ref("");
 const simulationError = ref("");
 const running = ref(false);
 const exampleNames = Object.keys(examples);
+
+// Draggable layout: editor height (handle below it) and side-panel width
+// (handle between editor and panel, wide screens only).
+const editor = useResizable({
+  storageKey: STORAGE_PREFIX + "editorHeight",
+  initial: Math.max(400, window.innerHeight - 140),
+  min: 250,
+  max: () => 3000,
+  axis: "y",
+});
+const panel = useResizable({
+  storageKey: STORAGE_PREFIX + "panelWidth",
+  initial: 320,
+  min: 260,
+  max: () => Math.max(260, window.innerWidth * 0.6),
+  axis: "x",
+  direction: -1,
+});
+const onWindowResize = () => {
+  panel.size.value = panel.clamp(panel.size.value);
+};
 
 const options = {
   media: "media/",
@@ -177,22 +199,54 @@ onMounted(() => {
   });
   loadExample();
   setStatus("");
+  window.addEventListener("resize", onWindowResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", onWindowResize);
 });
 </script>
 
 <template>
-  <div class="mx-2 py-2">
+  <div
+    class="mx-2 py-2"
+    :class="{
+      'cursor-row-resize select-none': editor.dragging.value,
+      'cursor-col-resize select-none': panel.dragging.value,
+    }"
+  >
     <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
       Programmable Card Simulation
     </h1>
-    <div class="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start">
+    <div
+      class="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-0"
+      :style="{ '--panel-width': panel.size.value + 'px' }"
+    >
       <div class="min-w-0 flex-1">
         <BlocklyComponent
-          class="h-[600px] w-full"
+          class="w-full"
+          :style="{ height: editor.size.value + 'px' }"
           :options="options"
           ref="blockly"
         ></BlocklyComponent>
-        <div class="mt-2 overflow-hidden rounded-lg bg-gray-50">
+        <div
+          role="separator"
+          aria-orientation="horizontal"
+          aria-label="Resize editor height"
+          :aria-valuenow="editor.size.value"
+          tabindex="0"
+          title="Drag to resize the editor (double-click to reset)"
+          class="group flex h-4 cursor-row-resize touch-none items-center justify-center focus:outline-none"
+          @pointerdown="editor.startDrag"
+          @keydown="editor.onKeydown"
+          @dblclick="editor.reset"
+        >
+          <div
+            class="h-1 w-16 rounded-full bg-gray-300 group-hover:bg-indigo-400 group-focus-visible:bg-indigo-500"
+            :class="{ 'bg-indigo-500': editor.dragging.value }"
+          ></div>
+        </div>
+        <div class="overflow-hidden rounded-lg bg-gray-50">
           <div class="px-4 py-5 sm:p-6">
             <div class="flex flex-wrap items-center gap-2">
               <drop-down-component
@@ -229,8 +283,25 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize side panel"
+        :aria-valuenow="panel.size.value"
+        tabindex="0"
+        title="Drag to resize the panel (double-click to reset)"
+        class="group hidden w-4 shrink-0 cursor-col-resize touch-none justify-center self-stretch focus:outline-none lg:flex"
+        @pointerdown="panel.startDrag"
+        @keydown="panel.onKeydown"
+        @dblclick="panel.reset"
+      >
+        <div
+          class="sticky top-1/2 my-auto h-16 w-1 rounded-full bg-gray-300 group-hover:bg-indigo-400 group-focus-visible:bg-indigo-500"
+          :class="{ 'bg-indigo-500': panel.dragging.value }"
+        ></div>
+      </div>
       <transaction-component
-        class="w-full lg:w-80 lg:shrink-0"
+        class="w-full lg:w-[var(--panel-width)] lg:shrink-0"
         v-model:outputRef="outputRef"
         :running="running"
         :error="simulationError"
