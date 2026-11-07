@@ -4,6 +4,17 @@ const text = (value: string) => ({
 const env = (name: string) => ({
   block: { type: "investec_env", fields: { NAME: name } },
 });
+const entry = (key: string, value: object, next?: object) => ({
+  block: {
+    type: "investec_object_entry",
+    fields: { KEY: key },
+    inputs: { VALUE: value },
+    ...(next ? { next } : {}),
+  },
+});
+const eventValue = (field: string) => ({
+  block: { type: "investec_event_value", fields: { FIELD: field } },
+});
 
 export const http = {
   kind: "category",
@@ -23,7 +34,31 @@ export const http = {
       type: "investec_http_response",
       inputs: { URL: text("https://") },
     },
+    {
+      kind: "block",
+      type: "investec_bearer_auth",
+      inputs: { TOKEN: env("API_TOKEN") },
+    },
     { kind: "block", type: "investec_event_object" },
+    { kind: "sep" },
+    {
+      kind: "block",
+      type: "investec_object",
+      inputs: {
+        ENTRIES: entry(
+          "merchant",
+          eventValue("MERCHANT_NAME"),
+          entry("amount", { block: { type: "investec_amount_rands" } }),
+        ),
+      },
+    },
+    {
+      kind: "block",
+      type: "investec_object_entry",
+      inputs: { VALUE: text("value") },
+    },
+    { kind: "block", type: "investec_object_get" },
+    { kind: "sep" },
     {
       kind: "block",
       type: "investec_slack_message",

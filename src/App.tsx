@@ -1,30 +1,53 @@
-import { useCallback, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import * as Blockly from "blockly/core";
 import {
   javascriptGenerator,
   type JavascriptGenerator,
 } from "blockly/javascript";
-import hljs from "highlight.js/lib/core";
-import javascript from "highlight.js/lib/languages/javascript";
-import "highlight.js/styles/github.css";
 
 import { BlocklyWorkspace } from "./components/BlocklyWorkspace";
-import { Button } from "./components/Button";
-import { ExampleSelect } from "./components/ExampleSelect";
+import { CodeView } from "./components/CodeView";
+import type { EnvironmentRow } from "./components/EnvironmentEditor";
+import { Header, type WorkspaceSource } from "./components/Header";
 import { ResizeHandle } from "./components/ResizeHandle";
-import { TransactionPanel } from "./components/TransactionPanel";
+import { ResultsView } from "./components/ResultsView";
+import { SidePanel, type PanelTab } from "./components/SidePanel";
+import { Toasts } from "./components/Toasts";
+import { TransactionForm } from "./components/TransactionForm";
+import { darkTheme, lightTheme } from "./blockly/themes";
+import { usePrefersDark } from "./hooks/usePrefersDark";
 import { useResizable } from "./hooks/useResizable";
+import { useToasts } from "./hooks/useToasts";
 import { installBlocks } from "./blocks";
 import { examples } from "./examples";
 import {
+  defaultTransaction,
   simulate,
-  type EnvironmentVariables,
+  validateTransaction,
   type ExecutionItem,
   type TransactionInput,
 } from "./lib/simulator";
 import { STORAGE_PREFIX, readStorage, writeStorage } from "./lib/storage";
 import {
+  downloadWorkspace,
+  listSaved,
+  readAutosave,
+  readSaved,
+  readWorkspaceFile,
+  writeAutosave,
+  writeSaved,
+  type WorkspaceState,
+} from "./lib/workspaces";
+import {
   InvestecToolbox,
+  TemplatesToolbox,
   HttpToolbox,
   DateTimeToolbox,
   LogicToolbox,
@@ -40,12 +63,27 @@ import {
 
 // Blockly 10 types javascriptGenerator as `any`; the class type is exported.
 const generator = javascriptGenerator as JavascriptGenerator;
-
-hljs.registerLanguage("javascript", javascript);
 installBlocks({ javascript: generator });
 
 const exampleNames = Object.keys(examples);
 const DEFAULT_EXAMPLE = "Petrol Card";
+const AUTOSAVE_DELAY_MS = 500;
+const TOOLBOX_KEY = STORAGE_PREFIX + "toolboxVisible";
+
+/** Remembered choice, else shown except on phone-sized screens. */
+function initialToolboxVisible(): boolean {
+  const stored = readStorage(TOOLBOX_KEY);
+  return stored === null ? window.innerWidth >= 768 : stored === "true";
+}
+
+/** Shows or hides the block toolbox and lets the workspace take the space. */
+function applyToolboxVisible(
+  workspace: Blockly.WorkspaceSvg,
+  visible: boolean,
+) {
+  workspace.getToolbox()?.setVisible(visible);
+  Blockly.svgResize(workspace);
+}
 
 const options: Blockly.BlocklyOptions = {
   media: "media/",
@@ -55,16 +93,20 @@ const options: Blockly.BlocklyOptions = {
     investec_card_after_transaction: 1,
     investec_card_after_decline: 1,
   },
+  // A neutral grid that reads on both the light and dark backgrounds.
   grid: {
     spacing: 25,
     length: 3,
-    colour: "#ccc",
+    colour: "rgba(156, 163, 175, 0.45)",
     snap: true,
   },
+  zoom: { controls: true, wheel: false, startScale: 0.9 },
+  trashcan: true,
   toolbox: {
     kind: "categoryToolbox",
     contents: [
       InvestecToolbox,
+      TemplatesToolbox,
       HttpToolbox,
       DateTimeToolbox,
       LogicToolbox,
@@ -77,8 +119,6 @@ const options: Blockly.BlocklyOptions = {
     ],
   },
 };
-
-const storageKey = (name: string) => STORAGE_PREFIX + name;
 
 /** Generates the card code, with a loop guard when the code has loops. */
 function generateRunnableCode(workspace: Blockly.Workspace): string {
@@ -94,188 +134,291 @@ function generateRunnableCode(workspace: Blockly.Workspace): string {
   }
 }
 
+const sourceName = (source: WorkspaceSource | "") =>
+  source ? source.slice(source.indexOf(":") + 1) : "";
+
 export default function App() {
   const workspaceRef = useRef<Blockly.WorkspaceSvg | null>(null);
-  const [workspaceName, setWorkspaceName] = useState(DEFAULT_EXAMPLE);
-  const [codeHtml, setCodeHtml] = useState("");
-  const [status, setStatus] = useState("");
-  const [running, setRunning] = useState(false);
-  const [simulationError, setSimulationError] = useState("");
-  const [output, setOutput] = useState<ExecutionItem[] | null>(null);
+  const autosaveTimer = useRef<number | undefined>(undefined);
+  const { toasts, notify, dismiss } = useToasts();
+  const prefersDark = usePrefersDark();
 
-  // Draggable layout: editor height (handle below it) and side-panel width
-  // (handle between editor and panel, wide screens only).
-  const editor = useResizable({
-    storageKey: STORAGE_PREFIX + "editorHeight",
-    initial: Math.max(400, window.innerHeight - 140),
-    min: 250,
-    max: () => 3000,
-    axis: "y",
-  });
+  const [source, setSource] = useState<WorkspaceSource | "">("");
+  const [saved, setSaved] = useState(listSaved);
+  const [code, setCode] = useState("");
+  const [tab, setTab] = useState<PanelTab>("transaction");
+  const [transaction, setTransaction] =
+    useState<TransactionInput>(defaultTransaction);
+  const [environment, setEnvironment] = useState<EnvironmentRow[]>([]);
+  const [running, setRunning] = useState(false);
+  const [error, setError] = useState("");
+  const [output, setOutput] = useState<ExecutionItem[] | null>(null);
+  const [outputFor, setOutputFor] = useState<TransactionInput | null>(null);
+  const [toolboxVisible, setToolboxVisible] = useState(initialToolboxVisible);
+  // Read on inject, so a re-created workspace keeps the current choice.
+  const toolboxVisibleRef = useRef(toolboxVisible);
+
+  // Width of the side panel; the handle sits between editor and panel.
   const panel = useResizable({
     storageKey: STORAGE_PREFIX + "panelWidth",
-    initial: 320,
-    min: 260,
+    initial: 380,
+    min: 300,
     max: () => window.innerWidth * 0.6,
     axis: "x",
     direction: -1,
   });
 
-  const showCode = useCallback(() => {
+  const loadState = useCallback((state: WorkspaceState) => {
     const workspace = workspaceRef.current;
     if (!workspace) return;
-    const code = generator.workspaceToCode(workspace);
-    // hljs escapes the source, so its output is safe to inject.
-    setCodeHtml(hljs.highlight(code, { language: "javascript" }).value);
+    Blockly.serialization.workspaces.load(state, workspace);
+    setCode(generator.workspaceToCode(workspace));
   }, []);
-
-  const loadState = useCallback(
-    (state: object) => {
-      const workspace = workspaceRef.current;
-      if (!workspace) return;
-      Blockly.serialization.workspaces.load(state, workspace);
-      showCode();
-    },
-    [showCode],
-  );
 
   const onInject = useCallback(
     (workspace: Blockly.WorkspaceSvg) => {
       workspaceRef.current = workspace;
-      // Keep the code preview in sync with the blocks.
+      applyToolboxVisible(workspace, toolboxVisibleRef.current);
       workspace.addChangeListener((event) => {
-        if (!event.isUiEvent) showCode();
+        if (event.isUiEvent) return;
+        // Keep the code view in sync and autosave shortly after edits.
+        setCode(generator.workspaceToCode(workspace));
+        window.clearTimeout(autosaveTimer.current);
+        autosaveTimer.current = window.setTimeout(
+          () => writeAutosave(Blockly.serialization.workspaces.save(workspace)),
+          AUTOSAVE_DELAY_MS,
+        );
       });
+
+      // Pick up where the viewer left off, or start from an example.
+      const autosave = readAutosave();
+      if (autosave) {
+        try {
+          loadState(autosave);
+          return;
+        } catch {
+          // A broken autosave falls through to the default example.
+        }
+      }
       const example = examples[DEFAULT_EXAMPLE];
-      if (example) loadState(example);
+      if (example) {
+        loadState(example);
+        setSource(`example:${DEFAULT_EXAMPLE}`);
+      }
     },
-    [loadState, showCode],
+    [loadState],
   );
 
-  function loadExample() {
-    const example = examples[workspaceName];
-    if (!example) return;
-    loadState(example);
-    setStatus(`Loaded the "${workspaceName}" example.`);
+  useEffect(() => () => window.clearTimeout(autosaveTimer.current), []);
+
+  function toggleToolbox() {
+    const visible = !toolboxVisible;
+    setToolboxVisible(visible);
+    toolboxVisibleRef.current = visible;
+    writeStorage(TOOLBOX_KEY, String(visible));
+    if (workspaceRef.current)
+      applyToolboxVisible(workspaceRef.current, visible);
   }
 
-  function saveWorkspace() {
-    const workspace = workspaceRef.current;
-    if (!workspace) return;
-    const state = Blockly.serialization.workspaces.save(workspace);
-    setStatus(
-      writeStorage(storageKey(workspaceName), JSON.stringify(state))
-        ? `Saved "${workspaceName}".`
-        : "Could not save: browser storage is unavailable.",
+  const hasBlocks = () =>
+    (workspaceRef.current?.getTopBlocks(false).length ?? 0) > 0;
+  const confirmReplace = () =>
+    !hasBlocks() ||
+    window.confirm(
+      "Replace the current workspace? Export or save it first if you want to keep it.",
     );
-  }
 
-  function loadWorkspace() {
-    // Fall back to the un-prefixed key used by earlier versions.
-    const saved =
-      readStorage(storageKey(workspaceName)) ?? readStorage(workspaceName);
-    if (!saved) {
-      setStatus(`No saved workspace named "${workspaceName}".`);
+  function open(next: WorkspaceSource) {
+    if (!confirmReplace()) return;
+    const name = sourceName(next);
+    const state = next.startsWith("example:")
+      ? (examples[name] as WorkspaceState | undefined)
+      : readSaved(name);
+    if (!state) {
+      notify(`Could not open "${name}".`, "error");
       return;
     }
     try {
-      loadState(JSON.parse(saved));
-      setStatus(`Loaded "${workspaceName}".`);
+      loadState(state);
+      setSource(next);
+      notify(`Opened "${name}".`);
     } catch (e) {
-      setStatus(`Saved workspace is invalid: ${(e as Error).message}`);
+      notify(`"${name}" could not be loaded: ${(e as Error).message}`, "error");
+    }
+  }
+
+  function saveAs() {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    const name = window
+      .prompt("Save this workspace in the browser as:", sourceName(source))
+      ?.trim();
+    if (!name) return;
+    if (
+      saved.includes(name) &&
+      !window.confirm(`Replace the saved workspace "${name}"?`)
+    ) {
+      return;
+    }
+    if (writeSaved(name, Blockly.serialization.workspaces.save(workspace))) {
+      setSaved(listSaved());
+      setSource(`saved:${name}`);
+      notify(`Saved "${name}".`);
+    } else {
+      notify(`Could not save "${name}".`, "error");
+    }
+  }
+
+  function exportWorkspace() {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    downloadWorkspace(
+      sourceName(source) || "workspace",
+      Blockly.serialization.workspaces.save(workspace),
+    );
+  }
+
+  async function importWorkspace(file: File) {
+    try {
+      const state = await readWorkspaceFile(file);
+      if (!confirmReplace()) return;
+      loadState(state);
+      setSource("");
+      notify(`Imported ${file.name}.`);
+    } catch (e) {
+      notify((e as Error).message, "error");
     }
   }
 
   function clearWorkspace() {
+    if (!confirmReplace()) return;
     workspaceRef.current?.clear();
-    showCode();
-    setStatus("");
+    setCode("");
+    setSource("");
   }
 
-  async function runCode(
-    transaction: TransactionInput,
-    environmentVariables: EnvironmentVariables,
-  ) {
+  async function run() {
     const workspace = workspaceRef.current;
-    if (!workspace) return;
+    if (!workspace || running) return;
+    const invalid = validateTransaction(transaction);
+    if (invalid) {
+      setTab("transaction");
+      notify(invalid, "error");
+      return;
+    }
+    const environmentVariables = Object.fromEntries(
+      environment.filter((row) => row.name).map((row) => [row.name, row.value]),
+    );
+    const input = {
+      ...transaction,
+      merchantName: transaction.merchantName.trim(),
+      merchantCity: transaction.merchantCity.trim(),
+    };
     setRunning(true);
-    setSimulationError("");
+    setError("");
     try {
       setOutput(
         await simulate(
           generateRunnableCode(workspace),
-          transaction,
+          input,
           environmentVariables,
         ),
       );
+      setOutputFor(input);
     } catch (e) {
       setOutput(null);
-      setSimulationError((e as Error).message);
+      setError((e as Error).message);
     } finally {
       setRunning(false);
+      setTab("results");
     }
   }
 
-  const resizing = editor.dragging
-    ? "cursor-row-resize select-none"
-    : panel.dragging
-      ? "cursor-col-resize select-none"
-      : "";
+  // Cmd/Ctrl+Enter runs from anywhere on the page.
+  const onShortcut = useEffectEvent((event: KeyboardEvent) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      void run();
+    }
+  });
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => onShortcut(event);
+    window.addEventListener("keydown", listener);
+    return () => window.removeEventListener("keydown", listener);
+  }, []);
+
+  // A dot on the Results tab shows the outcome of the last run.
+  const approved = output?.find(
+    (item) => item.type === "before_transaction",
+  )?.authorizationApproved;
+  const resultsBadge =
+    tab === "results" ? null : output ? (
+      <span
+        className={`size-2 rounded-full ${approved ? "bg-emerald-500" : "bg-red-500"}`}
+        aria-label={approved ? "approved" : "declined"}
+      />
+    ) : error ? (
+      <span className="size-2 rounded-full bg-red-500" aria-label="error" />
+    ) : null;
 
   return (
-    <div className={`mx-2 py-2 ${resizing}`}>
-      <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-        Programmable Card Simulation
-      </h1>
-      <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-0">
-        <div className="min-w-0 flex-1">
-          <BlocklyWorkspace
-            className="w-full"
-            style={{ height: editor.size }}
-            options={options}
-            onInject={onInject}
-          />
-          <ResizeHandle resizable={editor} label="Resize editor height" />
-          <div className="overflow-hidden rounded-lg bg-gray-50">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <ExampleSelect
-                  value={workspaceName}
-                  options={exampleNames}
-                  onChange={setWorkspaceName}
-                />
-                <Button onClick={loadExample}>Load Example</Button>
-                <Button onClick={saveWorkspace}>Save Workspace</Button>
-                <Button onClick={loadWorkspace}>Load Workspace</Button>
-                <Button onClick={clearWorkspace}>Clear Workspace</Button>
-                <span className="text-sm text-gray-600" aria-live="polite">
-                  {status}
-                </span>
-              </div>
-              <h2 className="mt-4 text-sm font-semibold text-gray-900">
-                Generated JavaScript
-              </h2>
-              <pre
-                className="mt-2 overflow-x-auto rounded bg-white p-3 text-sm"
-                dangerouslySetInnerHTML={{ __html: codeHtml }}
-              />
-            </div>
-          </div>
-        </div>
+    <div
+      className={`flex min-h-dvh flex-col lg:h-dvh ${
+        panel.dragging ? "cursor-col-resize select-none" : ""
+      }`}
+    >
+      <Header
+        examples={exampleNames}
+        saved={saved}
+        source={source}
+        running={running}
+        toolboxVisible={toolboxVisible}
+        onToggleToolbox={toggleToolbox}
+        onOpen={open}
+        onSaveAs={saveAs}
+        onImport={importWorkspace}
+        onExport={exportWorkspace}
+        onClear={clearWorkspace}
+        onRun={() => void run()}
+      />
+      <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <BlocklyWorkspace
+          className="h-[60vh] min-h-80 min-w-0 lg:h-auto lg:min-h-0 lg:flex-1"
+          options={options}
+          theme={prefersDark ? darkTheme : lightTheme}
+          onInject={onInject}
+        />
         <ResizeHandle
           resizable={panel}
           label="Resize side panel"
-          className="hidden lg:flex"
+          className="hidden border-l border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900 lg:flex"
         />
-        <TransactionPanel
-          className="w-full lg:w-[var(--panel-width)] lg:shrink-0"
+        <SidePanel
+          tab={tab}
+          onTabChange={setTab}
+          resultsBadge={resultsBadge}
+          className="border-t lg:w-[var(--panel-width)] lg:shrink-0 lg:border-t-0"
           style={{ "--panel-width": `${panel.size}px` } as CSSProperties}
-          running={running}
-          error={simulationError}
-          output={output}
-          onSimulate={runCode}
-        />
-      </div>
+        >
+          {tab === "transaction" && (
+            <TransactionForm
+              transaction={transaction}
+              onTransactionChange={setTransaction}
+              environment={environment}
+              onEnvironmentChange={setEnvironment}
+              running={running}
+              onRun={() => void run()}
+            />
+          )}
+          {tab === "results" && (
+            <ResultsView items={output} transaction={outputFor} error={error} />
+          )}
+          {tab === "code" && (
+            <CodeView code={code} onCopied={() => notify("Code copied.")} />
+          )}
+        </SidePanel>
+      </main>
+      <Toasts toasts={toasts} onDismiss={dismiss} />
     </div>
   );
 }

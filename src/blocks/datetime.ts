@@ -78,7 +78,37 @@ export const timeBetweenBlock = {
     "e.g. 22:00 to 06:00.",
 };
 
-const datetimeBlocks = [timePartBlock, weekendBlock, timeBetweenBlock];
+export const weekdayIsBlock = {
+  type: "investec_time_weekday_is",
+  message0: "transaction is on a %1 in %2",
+  args0: [
+    {
+      type: "field_dropdown",
+      name: "DAY",
+      // Values are ISO weekdays (1 = Monday).
+      options: [
+        ["Monday", "1"],
+        ["Tuesday", "2"],
+        ["Wednesday", "3"],
+        ["Thursday", "4"],
+        ["Friday", "5"],
+        ["Saturday", "6"],
+        ["Sunday", "7"],
+      ],
+    },
+    zoneArg,
+  ],
+  output: "Boolean",
+  colour: 160,
+  tooltip: "True when the transaction happens on the chosen day.",
+};
+
+const datetimeBlocks = [
+  timePartBlock,
+  weekendBlock,
+  weekdayIsBlock,
+  timeBetweenBlock,
+];
 
 function momentCode(block: Blockly.Block): string {
   const offset = Number(block.getFieldValue("ZONE"));
@@ -101,6 +131,10 @@ const generators: Record<
   },
   investec_time_is_weekend(block) {
     return [`${momentCode(block)}.isoWeekday() >= 6`, Order.RELATIONAL];
+  },
+  investec_time_weekday_is(block) {
+    const day = Number(block.getFieldValue("DAY"));
+    return [`${momentCode(block)}.isoWeekday() === ${day}`, Order.EQUALITY];
   },
   investec_time_between(block, generator) {
     const minutesOfDay = generator.provideFunction_(

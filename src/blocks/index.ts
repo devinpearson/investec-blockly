@@ -26,6 +26,8 @@ import { installCurrenciesBlock } from "./currencies";
 import { installHttpBlocks } from "./http";
 import { installEnvBlock } from "./env";
 import { installDateTimeBlocks } from "./datetime";
+import { installCardBlocks } from "./card";
+import { installObjectBlocks } from "./objects";
 
 export {
   installConsoleLogBlock,
@@ -41,6 +43,8 @@ export {
   installHttpBlocks,
   installEnvBlock,
   installDateTimeBlocks,
+  installCardBlocks,
+  installObjectBlocks,
 };
 
 // TODO: block to upload to Google Sheets.
@@ -63,4 +67,6 @@ export function installBlocks(generators: Generators = {}) {
   installHttpBlocks(generators);
   installEnvBlock(generators);
   installDateTimeBlocks(generators);
+  installCardBlocks(generators);
+  installObjectBlocks(generators);
 }

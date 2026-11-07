@@ -1,12 +1,12 @@
+import { PlusIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { inputClass } from "./styles";
+
 export type EnvironmentRow = { name: string; value: string };
 
 type Props = {
   rows: EnvironmentRow[];
   onChange: (rows: EnvironmentRow[]) => void;
 };
-
-const inputClass =
-  "block w-full min-w-0 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6";
 
 /**
  * Key/value rows sent to the simulator as environmentVariables, which the
@@ -18,13 +18,13 @@ export function EnvironmentEditor({ rows, onChange }: Props) {
     onChange(rows.map((row, i) => (i === index ? { ...row, ...patch } : row)));
 
   return (
-    <fieldset className="mt-6">
-      <legend className="text-sm font-semibold leading-6 text-gray-900">
-        Environment Variables
+    <fieldset>
+      <legend className="text-sm font-semibold text-gray-900 dark:text-white">
+        Environment variables
       </legend>
-      <p className="text-xs leading-5 text-gray-600">
-        Read in blocks with <code>env</code>. Not saved — re-enter after a
-        reload.
+      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        Read in blocks with <code className="font-mono">env</code>. Kept in
+        memory only — re-enter after a reload.
       </p>
       {rows.map((row, index) => (
         <div key={index} className="mt-2 flex items-center gap-2">
@@ -37,7 +37,7 @@ export function EnvironmentEditor({ rows, onChange }: Props) {
             placeholder="NAME"
             spellCheck={false}
             autoComplete="off"
-            className={`${inputClass} basis-2/5 font-mono`}
+            className={`${inputClass} !mt-0 basis-2/5 font-mono`}
           />
           <input
             value={row.value}
@@ -46,24 +46,25 @@ export function EnvironmentEditor({ rows, onChange }: Props) {
             placeholder="value"
             spellCheck={false}
             autoComplete="off"
-            className={`${inputClass} basis-3/5`}
+            className={`${inputClass} !mt-0 basis-3/5`}
           />
           <button
             type="button"
             aria-label={`Remove variable ${row.name || index + 1}`}
-            className="rounded px-2 py-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+            className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
             onClick={() => onChange(rows.filter((_, i) => i !== index))}
           >
-            ×
+            <XMarkIcon className="size-4" aria-hidden />
           </button>
         </div>
       ))}
       <button
         type="button"
-        className="mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+        className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
         onClick={() => onChange([...rows, { name: "", value: "" }])}
       >
-        + Add variable
+        <PlusIcon className="size-4" aria-hidden />
+        Add variable
       </button>
     </fieldset>
   );

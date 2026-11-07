@@ -13,6 +13,16 @@ export const cardFields = {
     label: "merchant country",
     path: "merchant.country.code",
   },
+  MERCHANT_COUNTRY_NAME: {
+    label: "merchant country name",
+    path: "merchant.country.name",
+  },
+  MERCHANT_CATEGORY_NAME: {
+    label: "merchant category name",
+    path: "merchant.category.name",
+  },
+  CARD_ID: { label: "card ID", path: "card.id" },
+  TYPE: { label: "transaction type", path: "type" },
 } satisfies Record<string, { label: string; path: string }>;
 
 export type CardField = keyof typeof cardFields;

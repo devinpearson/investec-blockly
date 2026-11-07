@@ -1,4 +1,5 @@
 import { investec as InvestecToolbox } from "./investec";
+import { templates as TemplatesToolbox } from "./templates";
 import { http as HttpToolbox } from "./http";
 import { datetime as DateTimeToolbox } from "./datetime";
 import { logic as LogicToolbox } from "./logic";
@@ -11,6 +12,7 @@ import { functions as FunctionsToolbox } from "./functions";
 
 export {
   InvestecToolbox,
+  TemplatesToolbox,
   HttpToolbox,
   DateTimeToolbox,
   LogicToolbox,

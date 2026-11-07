@@ -12,14 +12,32 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: fileURLToPath(
-            new URL("./node_modules/blockly/media/*", import.meta.url),
-          ),
+          src: "node_modules/blockly/media/*",
           dest: "media",
+          // v4 keeps the source folders by default; serve the files flat.
+          rename: { stripBase: true },
         },
       ],
     }),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        // Vendor code in its own long-cached chunks; Blockly alone is ~700 kB.
+        codeSplitting: {
+          groups: [
+            { name: "blockly", test: /node_modules[\\/]@?blockly/ },
+            {
+              name: "react",
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+    // Blockly can't be split further; keep the warning for anything else.
+    chunkSizeWarningLimit: 800,
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

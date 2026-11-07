@@ -67,3 +67,34 @@ export async function simulate(
   }
   return (await response.json()) as ExecutionItem[];
 }
+
+export const defaultTransaction: TransactionInput = {
+  currencyCode: "zar",
+  centsAmount: 1000,
+  merchantCode: "0000",
+  merchantName: "Test Merchant",
+  merchantCity: "Cape Town",
+  merchantCountry: "ZA",
+};
+
+/** A message describing the first invalid field, or null if all are valid. */
+export function validateTransaction(
+  transaction: TransactionInput,
+): string | null {
+  if (
+    !Number.isFinite(transaction.centsAmount) ||
+    transaction.centsAmount < 0
+  ) {
+    return "Amount must be a whole number of cents.";
+  }
+  const missing = (
+    [
+      ["currencyCode", "Currency"],
+      ["merchantCode", "Merchant code"],
+      ["merchantName", "Merchant name"],
+      ["merchantCity", "Merchant city"],
+      ["merchantCountry", "Merchant country"],
+    ] as const
+  ).find(([key]) => !String(transaction[key]).trim());
+  return missing ? `${missing[1]} is required.` : null;
+}

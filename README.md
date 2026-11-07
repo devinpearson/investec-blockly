@@ -3,31 +3,43 @@
 A basic example of blockly with blocks created specifically for Investec programmable card.
 Built with React, TypeScript and Vite.
 
-Blocks available:
+Card:
 - `before transaction` - creates the beforeTransaction function
 - `after transaction` - creates the afterTransaction function
 - `after decline` - creates the afterDecline function
-- `authorization` - the fields available from the authorization object
-- `transaction` - the fields available from the transaction object
+- `approve` / `decline` - the return value of beforeTransaction
 - `log` - creates a log statement at info, warning or error level
-- `approve` - creates a return transaction for the beforeTransaction function
-- `countries` - a list of countries
-- `currency` - a list of currencies
-- `merchants` - a list of merchants
+- `card event` - a field of the authorization / transaction (amount, merchant,
+  category, country, card ID, ...), whichever handler it is in
+- `amount is over / under R…` and `amount in rands`
+- `merchant category is` - a group of merchant category codes, e.g. fuel,
+  groceries, gambling or travel (hover the block to see the codes)
+- `countries`, `currency`, `merchants` - lists of codes
+
+Templates: ready-made rules to drop into a handler — fuel only, block
+gambling, decline after hours, decline over a limit or over `MAX_SPEND`, a
+Slack message and a webhook post for each purchase.
 
 HTTP (uses `fetch`, only inside the before/after/decline blocks):
-- `send request` - calls a URL; text bodies are sent as-is, anything else as JSON
+- `send request` - calls a URL with an optional body and headers; text bodies
+  are sent as-is, anything else as JSON
 - `response` - calls a URL and returns the response as JSON or text
-- `whole card event` - the full authorization/transaction object, e.g. as a webhook body
+- `bearer token` - headers with `Authorization: Bearer <token>`
+- `whole card event` - the full authorization/transaction object
+- `create object` / `key : value` - an object, e.g. a JSON body or headers
+- `get … from` - a property of an object, such as a JSON response
 - `send Slack message` - posts to a Slack incoming webhook
 - `send Telegram message` - sends a message from a Telegram bot
-- `env` - reads an environment variable (`process.env`); set values in the
-  Environment Variables section of the simulator panel
+- `env … as text / number` - reads an environment variable (`process.env`);
+  set values in the Environment Variables section of the simulator panel
 
 Date & Time (uses `moment`, in SAST or UTC):
 - `transaction hour / minute / day of week / ...` - part of the transaction time
-- `transaction is on a weekend`
+- `transaction is on a weekend` and `transaction is on a <day>`
 - `transaction time is between` - a time range, which may cross midnight
+
+The older `authorization:` and `transaction:` blocks still load in saved
+workspaces; `card event` replaces both.
 
 The before transaction, after transaction and after decline blocks can each be
 used once per workspace.

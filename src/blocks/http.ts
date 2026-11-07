@@ -32,13 +32,17 @@ export const httpRequestBlock = {
   ],
   message1: "with body %1",
   args1: [{ type: "input_value", name: "BODY" }],
+  // Optional; added after the first release, so older saves load without it.
+  message2: "with headers %1",
+  args2: [{ type: "input_value", name: "HEADERS" }],
   inputsInline: false,
   previousStatement: null,
   nextStatement: null,
   colour: 20,
   tooltip:
     "Calls a URL with fetch. Text bodies are sent as-is; anything else is " +
-    "sent as JSON. Logs a warning if the response is not OK.",
+    "sent as JSON. Headers take an object, e.g. from the bearer token or " +
+    "create object block. Logs a warning if the response is not OK.",
 };
 
 export const httpResponseBlock = {
@@ -63,6 +67,9 @@ export const httpResponseBlock = {
   ],
   message1: "with body %1",
   args1: [{ type: "input_value", name: "BODY" }],
+  // Optional; added after the first release, so older saves load without it.
+  message2: "with headers %1",
+  args2: [{ type: "input_value", name: "HEADERS" }],
   inputsInline: false,
   output: null,
   colour: 20,
@@ -111,19 +118,31 @@ export const telegramMessageBlock = {
   helpUrl: "https://core.telegram.org/bots/api#sendmessage",
 };
 
+export const bearerAuthBlock = {
+  type: "investec_bearer_auth",
+  message0: "bearer token %1",
+  args0: [{ type: "input_value", name: "TOKEN", check: "String" }],
+  output: null,
+  colour: 20,
+  tooltip:
+    "Headers with Authorization: Bearer <token>, for the request blocks' " +
+    "headers input. Keep the token in an environment variable.",
+};
+
 const httpBlocks = [
   httpRequestBlock,
   httpResponseBlock,
   eventObjectBlock,
   slackMessageBlock,
   telegramMessageBlock,
+  bearerAuthBlock,
 ];
 
 function provideSendRequest(generator: JavascriptGenerator): string {
   return generator.provideFunction_(
     "sendRequest",
-    `async function ${generator.FUNCTION_NAME_PLACEHOLDER_}(method, url, body) {
-  const options = { method, headers: {} };
+    `async function ${generator.FUNCTION_NAME_PLACEHOLDER_}(method, url, body, headers) {
+  const options = { method, headers: { ...(headers || {}) } };
   if (body !== undefined && body !== null && method !== 'GET') {
     const isText = typeof body === 'string';
     options.headers['Content-Type'] = isText ? 'text/plain' : 'application/json';
@@ -154,7 +173,8 @@ const generators: Record<
     const method = generator.quote_(block.getFieldValue("METHOD"));
     const url = value(generator, block, "URL", "''");
     const body = value(generator, block, "BODY");
-    return `await ${sendRequest}(${method}, ${url}, ${body});\n`;
+    const headers = value(generator, block, "HEADERS");
+    return `await ${sendRequest}(${method}, ${url}, ${body}, ${headers});\n`;
   },
   investec_http_response(block, generator) {
     const sendRequest = provideSendRequest(generator);
@@ -162,10 +182,15 @@ const generators: Record<
     const format = block.getFieldValue("FORMAT");
     const url = value(generator, block, "URL", "''");
     const body = value(generator, block, "BODY");
+    const headers = value(generator, block, "HEADERS");
     return [
-      `await (await ${sendRequest}(${method}, ${url}, ${body})).${format}()`,
+      `await (await ${sendRequest}(${method}, ${url}, ${body}, ${headers})).${format}()`,
       Order.AWAIT,
     ];
+  },
+  investec_bearer_auth(block, generator) {
+    const token = generator.valueToCode(block, "TOKEN", Order.ADDITION) || "''";
+    return [`{ Authorization: 'Bearer ' + ${token} }`, Order.ATOMIC];
   },
   investec_event_object(block) {
     return [eventParamOf(block), Order.ATOMIC];
@@ -191,7 +216,10 @@ const generators: Record<
 export function installHttpBlocks(generatorsByLanguage: Generators = {}) {
   Blockly.defineBlocksWithJsonArray(httpBlocks);
   for (const { type } of httpBlocks) {
-    requireHandler(type, HANDLER_TYPES, ASYNC_WARNING);
+    // The bearer block is a plain value and can be used anywhere.
+    if (type !== bearerAuthBlock.type) {
+      requireHandler(type, HANDLER_TYPES, ASYNC_WARNING);
+    }
     if (generatorsByLanguage.javascript) {
       generatorsByLanguage.javascript.forBlock[type] = generators[type]!;
     }
