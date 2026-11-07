@@ -65,6 +65,25 @@ export const ntfyBlock = {
   helpUrl: "https://docs.ntfy.sh/publish/",
 };
 
+export const whatsAppBlock = {
+  type: "investec_whatsapp_callmebot",
+  message0: "send WhatsApp message %1",
+  args0: [{ type: "input_value", name: "MESSAGE" }],
+  message1: "to phone %1",
+  args1: [{ type: "input_value", name: "PHONE", check: "String" }],
+  message2: "CallMeBot API key %1",
+  args2: [{ type: "input_value", name: "API_KEY", check: "String" }],
+  previousStatement: null,
+  nextStatement: null,
+  colour: 20,
+  tooltip:
+    "Sends a WhatsApp message to your own number with CallMeBot, a free " +
+    "third-party service that is not provided or endorsed by WhatsApp. " +
+    "For personal notifications only. Message their bot once to get an API " +
+    "key. Phone is in international format, e.g. +27821234567.",
+  helpUrl: "https://www.callmebot.com/blog/free-api-whatsapp-messages/",
+};
+
 export const formatAmountBlock = {
   type: "investec_format_amount",
   message0: "amount as text",
@@ -79,6 +98,7 @@ const integrationBlocks = [
   airtableRecordBlock,
   webhookBlock,
   ntfyBlock,
+  whatsAppBlock,
   formatAmountBlock,
 ];
 
@@ -125,6 +145,19 @@ const generators: Record<
     const message = value(generator, block, "MESSAGE", "''");
     const topic = value(generator, block, "TOPIC", "''");
     return `await ${sendRequest}('POST', ${ntfyUrl}(${topic}), String(${message}));\n`;
+  },
+  investec_whatsapp_callmebot(block, generator) {
+    const sendRequest = provideSendRequest(generator);
+    const message = value(generator, block, "MESSAGE", "''");
+    const phone = value(generator, block, "PHONE", "''");
+    const apiKey = value(generator, block, "API_KEY", "''");
+    // CallMeBot takes everything in the query string, so each part is encoded.
+    return (
+      `await ${sendRequest}('GET', 'https://api.callmebot.com/whatsapp.php` +
+      `?phone=' + encodeURIComponent(${phone}) + ` +
+      `'&text=' + encodeURIComponent(String(${message})) + ` +
+      `'&apikey=' + encodeURIComponent(${apiKey}));\n`
+    );
   },
   investec_format_amount(block, generator) {
     const formatAmount = generator.provideFunction_(

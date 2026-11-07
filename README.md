@@ -24,8 +24,8 @@ Card:
 Templates: ready-made rules to drop into a handler — card lock, fuel only,
 block gambling, travel mode, online lock, allow- and block-lists, category
 caps, weekday rules, after hours and spending limits; after a purchase, an
-Airtable record, a Make.com / Zapier webhook, a phone push or a Slack
-message; after a decline, a phone push or Telegram alert.
+Airtable record, a Make.com / Zapier webhook, a phone push, a WhatsApp or a
+Slack message; after a decline, a phone push, WhatsApp or Telegram alert.
 
 HTTP (uses `fetch`, only inside the before/after/decline blocks):
 - `send request` - calls a URL with an optional body and headers; text bodies
@@ -38,6 +38,10 @@ HTTP (uses `fetch`, only inside the before/after/decline blocks):
 - `add Airtable record` - adds a row to an Airtable table
 - `send to webhook` - posts JSON to a Make.com, Zapier or other webhook
 - `push to phone` - a push notification via [ntfy.sh](https://ntfy.sh)
+- `send WhatsApp message` - a WhatsApp message to your own number via
+  [CallMeBot](https://www.callmebot.com/blog/free-api-whatsapp-messages/), a
+  free third-party service that is not an official WhatsApp API; fine for
+  personal notifications (set `WHATSAPP_PHONE` and `CALLMEBOT_API_KEY`)
 - `send Slack message` - posts to a Slack incoming webhook
 - `send Telegram message` - sends a message from a Telegram bot
 - `env … as text / number` - reads an environment variable (`process.env`);

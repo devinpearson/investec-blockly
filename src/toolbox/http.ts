@@ -83,6 +83,15 @@ export const http = {
     },
     {
       kind: "block",
+      type: "investec_whatsapp_callmebot",
+      inputs: {
+        MESSAGE: text("Card used"),
+        PHONE: env("WHATSAPP_PHONE"),
+        API_KEY: env("CALLMEBOT_API_KEY"),
+      },
+    },
+    {
+      kind: "block",
       type: "investec_slack_message",
       inputs: { TEXT: text("Card transaction"), URL: env("SLACK_WEBHOOK_URL") },
     },

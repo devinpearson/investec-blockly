@@ -20,6 +20,7 @@ import {
   telegram,
   timeBetween,
   webhook,
+  whatsApp,
   type BlockState,
 } from "../blockly/snippets";
 
@@ -104,12 +105,16 @@ export const templates = {
     block(webhook("MAKE_WEBHOOK_URL", purchaseFields())),
     label("Phone push for every purchase (ntfy)"),
     block(ntfy(spentMessage())),
+    label("WhatsApp message for every purchase (CallMeBot)"),
+    block(whatsApp(spentMessage())),
     label("Slack message for every purchase"),
     block(slack(spentMessage())),
 
     label("After decline: alert"),
     label("Phone push when a purchase is declined"),
     block(ntfy(declinedMessage())),
+    label("WhatsApp alert when a purchase is declined (CallMeBot)"),
+    block(whatsApp(declinedMessage())),
     label("Telegram alert when a purchase is declined"),
     block(telegram(declinedMessage())),
   ],

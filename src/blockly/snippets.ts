@@ -194,6 +194,15 @@ export const ntfy = (message: BlockState): BlockState => ({
   inputs: { MESSAGE: input(message), TOPIC: input(env("NTFY_TOPIC")) },
 });
 
+export const whatsApp = (message: BlockState): BlockState => ({
+  type: "investec_whatsapp_callmebot",
+  inputs: {
+    MESSAGE: input(message),
+    PHONE: input(env("WHATSAPP_PHONE")),
+    API_KEY: input(env("CALLMEBOT_API_KEY")),
+  },
+});
+
 export const telegram = (message: BlockState): BlockState => ({
   type: "investec_telegram_message",
   inputs: {
