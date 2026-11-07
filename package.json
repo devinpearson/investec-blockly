@@ -10,6 +10,9 @@
     "format": "prettier --write ."
   },
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "dependencies": {
     "@blockly/theme-modern": "^5.0.5",
     "@heroicons/react": "^2.2.0",
