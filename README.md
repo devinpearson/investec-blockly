@@ -3,6 +3,8 @@
 A basic example of blockly with blocks created specifically for Investec programmable card.
 Built with React, TypeScript and Vite.
 
+This is a community project. It is not made, endorsed or supported by Investec.
+
 Card:
 - `before transaction` - creates the beforeTransaction function
 - `after transaction` - creates the afterTransaction function

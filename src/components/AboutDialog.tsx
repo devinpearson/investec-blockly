@@ -142,6 +142,10 @@ export function AboutDialog({ open, onClose }: Props) {
               against made-up purchases before it goes near a real card. It
               never touches a real account or card.
             </p>
+            <p className="mt-2">
+              It's a community project: it isn't made, endorsed or supported by
+              Investec.
+            </p>
           </Section>
 
           <Section title="How a run works">

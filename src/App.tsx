@@ -15,6 +15,7 @@ import {
 import { BlocklyWorkspace } from "./components/BlocklyWorkspace";
 import { AboutDialog } from "./components/AboutDialog";
 import { CodeView } from "./components/CodeView";
+import { Footer } from "./components/Footer";
 import { GuideView } from "./components/GuideView";
 import type { EnvironmentRow } from "./components/EnvironmentEditor";
 import { Header, type WorkspaceSource } from "./components/Header";
@@ -498,6 +499,7 @@ export default function App() {
           )}
         </SidePanel>
       </main>
+      <Footer />
       <AboutDialog
         open={aboutOpen}
         onClose={() => {
