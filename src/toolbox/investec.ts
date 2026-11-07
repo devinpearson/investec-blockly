@@ -26,6 +26,7 @@ export const investec = {
     },
     { kind: "sep" },
     { kind: "block", type: "investec_event_value" },
+    { kind: "block", type: "investec_event_object" },
     { kind: "block", type: "investec_amount_compare" },
     { kind: "block", type: "investec_amount_rands" },
     { kind: "block", type: "investec_merchant_group" },

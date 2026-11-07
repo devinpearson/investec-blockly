@@ -3,6 +3,7 @@ import {
   ExclamationTriangleIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid";
+import { LogContent } from "./LogContent";
 import type {
   ExecutionItem,
   LogLevel,
@@ -128,9 +129,7 @@ export function ResultsView({ items, transaction, error }: Props) {
                     >
                       {log.level}
                     </span>
-                    <code className="min-w-0 whitespace-pre-wrap break-words font-mono text-[13px] text-gray-800 dark:text-gray-200">
-                      {log.content}
-                    </code>
+                    <LogContent content={log.content} />
                   </li>
                 ))}
               </ul>

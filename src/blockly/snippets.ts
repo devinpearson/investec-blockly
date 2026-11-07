@@ -42,6 +42,7 @@ export const eventValue = (field: string): BlockState => ({
 });
 
 export const rands: BlockState = { type: "investec_amount_rands" };
+export const eventObject: BlockState = { type: "investec_event_object" };
 export const amountText: BlockState = { type: "investec_format_amount" };
 export const timeText: BlockState = {
   type: "investec_time_text",

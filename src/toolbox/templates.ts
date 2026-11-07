@@ -8,7 +8,9 @@ import {
   declinedMessage,
   env,
   envFlag,
+  eventObject,
   isForeign,
+  log,
   merchantGroup,
   nameContainsAny,
   not,
@@ -32,6 +34,10 @@ export const templates = {
   name: "Templates",
   colour: "#6366F1",
   contents: [
+    label("Any handler: inspect"),
+    label("Log the whole card event (authorization / transaction)"),
+    block(log(eventObject)),
+
     label("Before transaction: decide"),
     label("Lock the card while CARD_LOCKED is on"),
     block(declineIf(envFlag("CARD_LOCKED"), "card is locked")),

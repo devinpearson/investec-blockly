@@ -10,22 +10,28 @@ const restaurant = { merchantCode: "5812", merchantName: "Ocean Basket" };
 export const guides: Record<string, Guide> = {
   Default: {
     summary:
-      "The smallest possible card program: it logs the amount before a " +
-      "purchase and the merchant after it. A good place to see the flow " +
-      "from blocks to results.",
+      "The smallest possible card program: it logs everything the card " +
+      "sees — the whole authorization before the purchase and the whole " +
+      "transaction after it. A good place to see which fields you can use.",
     steps: [
-      "Before transaction logs the authorization's cents amount.",
+      "Before transaction logs the whole authorization: account, amount, " +
+        "currency, time, card, and the merchant with its category and " +
+        "country.",
       "It doesn't return approve or decline — and a before transaction " +
         "that returns nothing approves the purchase.",
       "Because the purchase is approved, after transaction runs and logs " +
-        "the merchant name.",
+        "the whole transaction, which has the same fields.",
     ],
     scenarios: [
       {
         label: "Any purchase",
-        expect: "Approved; logs 1000, then the merchant name",
+        expect: "Approved; logs the authorization, then the transaction",
         transaction: { centsAmount: 1000, ...groceries },
       },
+    ],
+    notes: [
+      'In Results, click a logged object to expand it. The "card event" ' +
+        "block reads a single field, e.g. merchant name.",
     ],
   },
 

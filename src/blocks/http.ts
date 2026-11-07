@@ -80,10 +80,10 @@ export const eventObjectBlock = {
   type: "investec_event_object",
   message0: "whole card event",
   output: null,
-  colour: 20,
+  colour: 230,
   tooltip:
-    "The full authorization (before transaction) or transaction object — " +
-    "useful as a webhook body.",
+    "The full authorization (before transaction) or transaction object. " +
+    "Put it in a log block to see every field, or use it as a webhook body.",
 };
 
 export const slackMessageBlock = {
