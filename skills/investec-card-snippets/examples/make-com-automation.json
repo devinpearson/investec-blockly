@@ -1,0 +1,393 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_after_transaction",
+        "x": 40,
+        "y": 40,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_webhook_send",
+              "inputs": {
+                "URL": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "MAKE_WEBHOOK_URL",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "DATA": {
+                  "block": {
+                    "type": "investec_object",
+                    "inputs": {
+                      "ENTRIES": {
+                        "block": {
+                          "type": "investec_object_entry",
+                          "fields": {
+                            "KEY": "Date"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "block": {
+                                "type": "investec_event_value",
+                                "fields": {
+                                  "FIELD": "DATETIME"
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "investec_object_entry",
+                              "fields": {
+                                "KEY": "Merchant"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "investec_event_value",
+                                    "fields": {
+                                      "FIELD": "MERCHANT_NAME"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "investec_object_entry",
+                                  "fields": {
+                                    "KEY": "Category"
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "investec_event_value",
+                                        "fields": {
+                                          "FIELD": "MERCHANT_CATEGORY_NAME"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "investec_object_entry",
+                                      "fields": {
+                                        "KEY": "City"
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "investec_event_value",
+                                            "fields": {
+                                              "FIELD": "MERCHANT_CITY"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "investec_object_entry",
+                                          "fields": {
+                                            "KEY": "Country"
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "investec_event_value",
+                                                "fields": {
+                                                  "FIELD": "MERCHANT_COUNTRY_NAME"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "investec_object_entry",
+                                              "fields": {
+                                                "KEY": "Amount"
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "investec_amount_rands"
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "investec_object_entry",
+                                                  "fields": {
+                                                    "KEY": "Currency"
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "investec_event_value",
+                                                        "fields": {
+                                                          "FIELD": "CURRENCY_CODE"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "investec_object_entry",
+                                                      "fields": {
+                                                        "KEY": "Card"
+                                                      },
+                                                      "inputs": {
+                                                        "VALUE": {
+                                                          "block": {
+                                                            "type": "investec_event_value",
+                                                            "fields": {
+                                                              "FIELD": "CARD_ID"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "next": {
+                                                        "block": {
+                                                          "type": "investec_object_entry",
+                                                          "fields": {
+                                                            "KEY": "Status"
+                                                          },
+                                                          "inputs": {
+                                                            "VALUE": {
+                                                              "block": {
+                                                                "type": "text",
+                                                                "fields": {
+                                                                  "TEXT": "approved"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "icons": {
+          "comment": {
+            "text": "Make.com: every purchase is posted to a Make webhook.\n\nIn Make, start a scenario with Webhooks › Custom webhook and copy its URL into MAKE_WEBHOOK_URL. Then add, for example, Google Sheets › Add a row, and a filtered route (Amount > 1000) to Slack. Zapier's Catch Hook works the same way.",
+            "pinned": false,
+            "height": 160,
+            "width": 320
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_decline",
+        "x": 40,
+        "y": 420,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_webhook_send",
+              "inputs": {
+                "URL": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "MAKE_WEBHOOK_URL",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "DATA": {
+                  "block": {
+                    "type": "investec_object",
+                    "inputs": {
+                      "ENTRIES": {
+                        "block": {
+                          "type": "investec_object_entry",
+                          "fields": {
+                            "KEY": "Date"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "block": {
+                                "type": "investec_event_value",
+                                "fields": {
+                                  "FIELD": "DATETIME"
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "investec_object_entry",
+                              "fields": {
+                                "KEY": "Merchant"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "investec_event_value",
+                                    "fields": {
+                                      "FIELD": "MERCHANT_NAME"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "investec_object_entry",
+                                  "fields": {
+                                    "KEY": "Category"
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "investec_event_value",
+                                        "fields": {
+                                          "FIELD": "MERCHANT_CATEGORY_NAME"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "investec_object_entry",
+                                      "fields": {
+                                        "KEY": "City"
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "investec_event_value",
+                                            "fields": {
+                                              "FIELD": "MERCHANT_CITY"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "investec_object_entry",
+                                          "fields": {
+                                            "KEY": "Country"
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "investec_event_value",
+                                                "fields": {
+                                                  "FIELD": "MERCHANT_COUNTRY_NAME"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "investec_object_entry",
+                                              "fields": {
+                                                "KEY": "Amount"
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "investec_amount_rands"
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "investec_object_entry",
+                                                  "fields": {
+                                                    "KEY": "Currency"
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "investec_event_value",
+                                                        "fields": {
+                                                          "FIELD": "CURRENCY_CODE"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "investec_object_entry",
+                                                      "fields": {
+                                                        "KEY": "Card"
+                                                      },
+                                                      "inputs": {
+                                                        "VALUE": {
+                                                          "block": {
+                                                            "type": "investec_event_value",
+                                                            "fields": {
+                                                              "FIELD": "CARD_ID"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "next": {
+                                                        "block": {
+                                                          "type": "investec_object_entry",
+                                                          "fields": {
+                                                            "KEY": "Status"
+                                                          },
+                                                          "inputs": {
+                                                            "VALUE": {
+                                                              "block": {
+                                                                "type": "text",
+                                                                "fields": {
+                                                                  "TEXT": "declined"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

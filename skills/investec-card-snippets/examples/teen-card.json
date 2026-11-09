@@ -1,0 +1,320 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_before_transaction",
+        "x": 40,
+        "y": 40,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "controls_if",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "logic_negate",
+                    "inputs": {
+                      "BOOL": {
+                        "block": {
+                          "type": "logic_operation",
+                          "fields": {
+                            "OP": "OR"
+                          },
+                          "inputs": {
+                            "A": {
+                              "block": {
+                                "type": "investec_merchant_group",
+                                "fields": {
+                                  "GROUP": "GROCERIES"
+                                }
+                              }
+                            },
+                            "B": {
+                              "block": {
+                                "type": "investec_merchant_group",
+                                "fields": {
+                                  "GROUP": "TRANSPORT"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "investec_decline_with_reason",
+                    "inputs": {
+                      "REASON": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": "only groceries and transport"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "controls_if",
+                  "inputs": {
+                    "IF0": {
+                      "block": {
+                        "type": "investec_amount_compare",
+                        "fields": {
+                          "OP": "GT",
+                          "RANDS": 300
+                        }
+                      }
+                    },
+                    "DO0": {
+                      "block": {
+                        "type": "investec_decline_with_reason",
+                        "inputs": {
+                          "REASON": {
+                            "block": {
+                              "type": "text",
+                              "fields": {
+                                "TEXT": "over R300"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "controls_if",
+                      "inputs": {
+                        "IF0": {
+                          "block": {
+                            "type": "investec_time_between",
+                            "fields": {
+                              "START": "21:00",
+                              "END": "06:00",
+                              "ZONE": "120"
+                            }
+                          }
+                        },
+                        "DO0": {
+                          "block": {
+                            "type": "investec_decline_with_reason",
+                            "inputs": {
+                              "REASON": {
+                                "block": {
+                                  "type": "text",
+                                  "fields": {
+                                    "TEXT": "after 21:00"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "investec_before_transaction_return",
+                          "fields": {
+                            "VALUE": "APPROVE"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "icons": {
+          "comment": {
+            "text": "Teen card: groceries and transport only, at most R300, nothing between 21:00 and 06:00.\n\nSet NTFY_TOPIC to a private topic name and subscribe to it in the ntfy app to get a push for every purchase and decline.",
+            "pinned": false,
+            "height": 160,
+            "width": 320
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_transaction",
+        "x": 40,
+        "y": 330,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_ntfy_push",
+              "inputs": {
+                "MESSAGE": {
+                  "block": {
+                    "type": "text_join",
+                    "extraState": {
+                      "itemCount": 4
+                    },
+                    "inputs": {
+                      "ADD0": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": "Spent "
+                          }
+                        }
+                      },
+                      "ADD1": {
+                        "block": {
+                          "type": "investec_format_amount"
+                        }
+                      },
+                      "ADD2": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": " at "
+                          }
+                        }
+                      },
+                      "ADD3": {
+                        "block": {
+                          "type": "investec_event_value",
+                          "fields": {
+                            "FIELD": "MERCHANT_NAME"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "TOPIC": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "NTFY_TOPIC",
+                      "AS": "TEXT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_decline",
+        "x": 40,
+        "y": 530,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_ntfy_push",
+              "inputs": {
+                "MESSAGE": {
+                  "block": {
+                    "type": "text_join",
+                    "extraState": {
+                      "itemCount": 10
+                    },
+                    "inputs": {
+                      "ADD0": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": "Declined "
+                          }
+                        }
+                      },
+                      "ADD1": {
+                        "block": {
+                          "type": "investec_format_amount"
+                        }
+                      },
+                      "ADD2": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": " at "
+                          }
+                        }
+                      },
+                      "ADD3": {
+                        "block": {
+                          "type": "investec_event_value",
+                          "fields": {
+                            "FIELD": "MERCHANT_NAME"
+                          }
+                        }
+                      },
+                      "ADD4": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": ", "
+                          }
+                        }
+                      },
+                      "ADD5": {
+                        "block": {
+                          "type": "investec_event_value",
+                          "fields": {
+                            "FIELD": "MERCHANT_CITY"
+                          }
+                        }
+                      },
+                      "ADD6": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": " ("
+                          }
+                        }
+                      },
+                      "ADD7": {
+                        "block": {
+                          "type": "investec_event_value",
+                          "fields": {
+                            "FIELD": "MERCHANT_COUNTRY_NAME"
+                          }
+                        }
+                      },
+                      "ADD8": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": ") — "
+                          }
+                        }
+                      },
+                      "ADD9": {
+                        "block": {
+                          "type": "investec_time_text",
+                          "fields": {
+                            "ZONE": "120"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "TOPIC": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "NTFY_TOPIC",
+                      "AS": "TEXT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

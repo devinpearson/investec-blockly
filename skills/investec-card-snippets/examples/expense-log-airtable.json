@@ -1,0 +1,444 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_before_transaction",
+        "x": 40,
+        "y": 40,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_before_transaction_return",
+              "fields": {
+                "VALUE": "APPROVE"
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_transaction",
+        "x": 40,
+        "y": 150,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_airtable_add_record",
+              "inputs": {
+                "BASE": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_BASE",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "TABLE": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_TABLE",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "FIELDS": {
+                  "block": {
+                    "type": "investec_object",
+                    "inputs": {
+                      "ENTRIES": {
+                        "block": {
+                          "type": "investec_object_entry",
+                          "fields": {
+                            "KEY": "Date"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "block": {
+                                "type": "investec_event_value",
+                                "fields": {
+                                  "FIELD": "DATETIME"
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "investec_object_entry",
+                              "fields": {
+                                "KEY": "Merchant"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "investec_event_value",
+                                    "fields": {
+                                      "FIELD": "MERCHANT_NAME"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "investec_object_entry",
+                                  "fields": {
+                                    "KEY": "Category"
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "investec_event_value",
+                                        "fields": {
+                                          "FIELD": "MERCHANT_CATEGORY_NAME"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "investec_object_entry",
+                                      "fields": {
+                                        "KEY": "City"
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "investec_event_value",
+                                            "fields": {
+                                              "FIELD": "MERCHANT_CITY"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "investec_object_entry",
+                                          "fields": {
+                                            "KEY": "Country"
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "investec_event_value",
+                                                "fields": {
+                                                  "FIELD": "MERCHANT_COUNTRY_NAME"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "investec_object_entry",
+                                              "fields": {
+                                                "KEY": "Amount"
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "investec_amount_rands"
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "investec_object_entry",
+                                                  "fields": {
+                                                    "KEY": "Currency"
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "investec_event_value",
+                                                        "fields": {
+                                                          "FIELD": "CURRENCY_CODE"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "investec_object_entry",
+                                                      "fields": {
+                                                        "KEY": "Card"
+                                                      },
+                                                      "inputs": {
+                                                        "VALUE": {
+                                                          "block": {
+                                                            "type": "investec_event_value",
+                                                            "fields": {
+                                                              "FIELD": "CARD_ID"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "next": {
+                                                        "block": {
+                                                          "type": "investec_object_entry",
+                                                          "fields": {
+                                                            "KEY": "Status"
+                                                          },
+                                                          "inputs": {
+                                                            "VALUE": {
+                                                              "block": {
+                                                                "type": "text",
+                                                                "fields": {
+                                                                  "TEXT": "Approved"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "TOKEN": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_TOKEN",
+                      "AS": "TEXT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "icons": {
+          "comment": {
+            "text": "Expense log: every purchase and decline becomes a row in Airtable.\n\nCreate a table with columns Date, Merchant, Category, City, Country, Amount, Currency, Card and Status. AIRTABLE_BASE is the app… ID from the base URL; AIRTABLE_TOKEN is a personal access token with data.records:write.",
+            "pinned": false,
+            "height": 160,
+            "width": 320
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_decline",
+        "x": 40,
+        "y": 640,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_airtable_add_record",
+              "inputs": {
+                "BASE": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_BASE",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "TABLE": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_TABLE",
+                      "AS": "TEXT"
+                    }
+                  }
+                },
+                "FIELDS": {
+                  "block": {
+                    "type": "investec_object",
+                    "inputs": {
+                      "ENTRIES": {
+                        "block": {
+                          "type": "investec_object_entry",
+                          "fields": {
+                            "KEY": "Date"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "block": {
+                                "type": "investec_event_value",
+                                "fields": {
+                                  "FIELD": "DATETIME"
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "investec_object_entry",
+                              "fields": {
+                                "KEY": "Merchant"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "investec_event_value",
+                                    "fields": {
+                                      "FIELD": "MERCHANT_NAME"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "investec_object_entry",
+                                  "fields": {
+                                    "KEY": "Category"
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "investec_event_value",
+                                        "fields": {
+                                          "FIELD": "MERCHANT_CATEGORY_NAME"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "investec_object_entry",
+                                      "fields": {
+                                        "KEY": "City"
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "investec_event_value",
+                                            "fields": {
+                                              "FIELD": "MERCHANT_CITY"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "investec_object_entry",
+                                          "fields": {
+                                            "KEY": "Country"
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "investec_event_value",
+                                                "fields": {
+                                                  "FIELD": "MERCHANT_COUNTRY_NAME"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "investec_object_entry",
+                                              "fields": {
+                                                "KEY": "Amount"
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "investec_amount_rands"
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "investec_object_entry",
+                                                  "fields": {
+                                                    "KEY": "Currency"
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "investec_event_value",
+                                                        "fields": {
+                                                          "FIELD": "CURRENCY_CODE"
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "investec_object_entry",
+                                                      "fields": {
+                                                        "KEY": "Card"
+                                                      },
+                                                      "inputs": {
+                                                        "VALUE": {
+                                                          "block": {
+                                                            "type": "investec_event_value",
+                                                            "fields": {
+                                                              "FIELD": "CARD_ID"
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "next": {
+                                                        "block": {
+                                                          "type": "investec_object_entry",
+                                                          "fields": {
+                                                            "KEY": "Status"
+                                                          },
+                                                          "inputs": {
+                                                            "VALUE": {
+                                                              "block": {
+                                                                "type": "text",
+                                                                "fields": {
+                                                                  "TEXT": "Declined"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "TOKEN": {
+                  "block": {
+                    "type": "investec_env",
+                    "fields": {
+                      "NAME": "AIRTABLE_TOKEN",
+                      "AS": "TEXT"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

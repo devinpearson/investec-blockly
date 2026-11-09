@@ -37,6 +37,8 @@ import {
   type ExecutionItem,
   type TransactionInput,
 } from "./lib/simulator";
+import { generateRunnableCode } from "./lib/codegen";
+import { readShareHash, decodeWorkspace, shareUrl } from "./lib/share";
 import { STORAGE_PREFIX, readStorage, writeStorage } from "./lib/storage";
 import {
   downloadWorkspace,
@@ -127,19 +129,8 @@ const options: Blockly.BlocklyOptions = {
   },
 };
 
-/** Generates the card code, with a loop guard when the code has loops. */
-function generateRunnableCode(workspace: Blockly.Workspace): string {
-  // The guard is evaluated by the simulator, so it must not depend on browser
-  // globals like `window`.
-  generator.INFINITE_LOOP_TRAP =
-    'if (--LoopTrap < 0) throw new Error("Infinite loop.");\n';
-  try {
-    const code = generator.workspaceToCode(workspace);
-    return (code.includes("LoopTrap") ? "let LoopTrap = 1000;\n" : "") + code;
-  } finally {
-    generator.INFINITE_LOOP_TRAP = null;
-  }
-}
+const generateCode = (workspace: Blockly.Workspace) =>
+  generateRunnableCode(generator, workspace);
 
 const sourceName = (source: WorkspaceSource | "") =>
   source ? source.slice(source.indexOf(":") + 1) : "";
@@ -336,6 +327,63 @@ export default function App() {
     }
   }
 
+  /** Copies a link that opens this workspace, for sharing or bookmarking. */
+  async function shareWorkspace() {
+    const workspace = workspaceRef.current;
+    if (!workspace) return;
+    try {
+      const url = await shareUrl(
+        window.location.href,
+        Blockly.serialization.workspaces.save(workspace),
+        sourceName(source) || undefined,
+      );
+      await navigator.clipboard.writeText(url);
+      notify("Copied a link that opens this workspace.");
+    } catch {
+      notify("Could not copy the link.", "error");
+    }
+  }
+
+  // Opens a workspace packed into the URL (#import=…), e.g. a snippet an AI
+  // assistant made with the MCP server. Runs on load and on hash changes.
+  const openSharedLink = useEffectEvent(async () => {
+    const shared = readShareHash(window.location.hash);
+    if (!shared) return;
+    // Drop the fragment so a reload doesn't re-import over later edits.
+    window.history.replaceState(
+      null,
+      "",
+      window.location.pathname + window.location.search,
+    );
+    const label = shared.name ? `"${shared.name}"` : "the shared snippet";
+    try {
+      const state = await decodeWorkspace(shared.data);
+      if (
+        hasBlocks() &&
+        !window.confirm(
+          `Open ${label} from the link? It replaces the current workspace — export or save it first if you want to keep it.`,
+        )
+      ) {
+        return;
+      }
+      loadState(state);
+      setSource("");
+      notify(`Opened ${label} from a link.`);
+    } catch (e) {
+      notify((e as Error).message, "error");
+    }
+  });
+  useEffect(() => {
+    const listener = () => void openSharedLink();
+    // After the autosave or default example has loaded on inject.
+    const timer = window.setTimeout(listener, 0);
+    window.addEventListener("hashchange", listener);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("hashchange", listener);
+    };
+  }, []);
+
   function clearWorkspace() {
     if (!confirmReplace()) return;
     workspaceRef.current?.clear();
@@ -367,11 +415,7 @@ export default function App() {
     setError("");
     try {
       setOutput(
-        await simulate(
-          generateRunnableCode(workspace),
-          input,
-          environmentVariables,
-        ),
+        await simulate(generateCode(workspace), input, environmentVariables),
       );
       setOutputFor(input);
     } catch (e) {
@@ -442,6 +486,7 @@ export default function App() {
         onSaveAs={saveAs}
         onImport={importWorkspace}
         onExport={exportWorkspace}
+        onShare={() => void shareWorkspace()}
         onClear={clearWorkspace}
         onRun={() => void run()}
       />

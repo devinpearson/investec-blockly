@@ -3,6 +3,7 @@ import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
   BookmarkIcon,
+  LinkIcon,
   CreditCardIcon,
   PlayIcon,
   QuestionMarkCircleIcon,
@@ -24,6 +25,7 @@ type Props = {
   onSaveAs: () => void;
   onImport: (file: File) => void;
   onExport: () => void;
+  onShare: () => void;
   onClear: () => void;
   onRun: () => void;
 };
@@ -76,6 +78,7 @@ export function Header({
   onSaveAs,
   onImport,
   onExport,
+  onShare,
   onClear,
   onRun,
 }: Props) {
@@ -143,6 +146,11 @@ export function Header({
           label="Export"
           icon={<ArrowDownTrayIcon className={iconClass} aria-hidden />}
           onClick={onExport}
+        />
+        <ToolButton
+          label="Copy link"
+          icon={<LinkIcon className={iconClass} aria-hidden />}
+          onClick={onShare}
         />
         <ToolButton
           label="Clear"

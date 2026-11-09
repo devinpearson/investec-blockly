@@ -6,7 +6,7 @@ import prettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "src/output.css"] },
+  { ignores: ["**/dist", "src/output.css"] },
   {
     files: ["**/*.{ts,tsx}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -25,6 +25,11 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
     },
+  },
+  {
+    // The MCP server and its tests run in Node.
+    files: ["mcp/**/*.{ts,mjs}"],
+    languageOptions: { globals: globals.node },
   },
   {
     files: ["*.config.{js,ts}"],

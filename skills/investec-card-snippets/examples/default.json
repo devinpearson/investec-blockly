@@ -1,0 +1,51 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_before_transaction",
+        "x": 40,
+        "y": 40,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_console_log",
+              "fields": {
+                "LEVEL": "INFO"
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "investec_event_object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_transaction",
+        "x": 40,
+        "y": 180,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_console_log",
+              "fields": {
+                "LEVEL": "INFO"
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "investec_event_object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

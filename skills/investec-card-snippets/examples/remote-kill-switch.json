@@ -1,0 +1,82 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_before_transaction",
+        "x": 40,
+        "y": 40,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "controls_if",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "investec_object_get",
+                    "fields": {
+                      "KEY": "locked"
+                    },
+                    "inputs": {
+                      "OBJECT": {
+                        "block": {
+                          "type": "investec_http_response",
+                          "fields": {
+                            "FORMAT": "json",
+                            "METHOD": "GET"
+                          },
+                          "inputs": {
+                            "URL": {
+                              "block": {
+                                "type": "investec_env",
+                                "fields": {
+                                  "NAME": "STATUS_URL",
+                                  "AS": "TEXT"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "investec_decline_with_reason",
+                    "inputs": {
+                      "REASON": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": "card locked remotely"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "investec_before_transaction_return",
+                  "fields": {
+                    "VALUE": "APPROVE"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "icons": {
+          "comment": {
+            "text": "Remote kill switch: before each purchase the card fetches STATUS_URL and declines while it returns {\"locked\": true}.\n\nSTATUS_URL can be a raw GitHub Gist, an Airtable record or a Make webhook with a Webhook response. Every purchase waits for this call, and if it fails the simulator declines the purchase.",
+            "pinned": false,
+            "height": 160,
+            "width": 320
+          }
+        }
+      }
+    ]
+  }
+}

@@ -38,11 +38,24 @@ export function eventParamOf(block: Blockly.Block): string {
  * Adds an onchange check to a block type that shows `message` as a warning
  * whenever `isValid(block)` is false.
  */
+/** A rule about where a block may go, checked by addPlacementWarning. */
+export type PlacementRule = {
+  isValid: (block: Blockly.Block) => boolean;
+  message: string;
+};
+
+/**
+ * Every placement rule by block type, so tools without a rendered workspace
+ * (the MCP server, the skill reference) can check and describe them too.
+ */
+export const placementRules = new Map<string, PlacementRule>();
+
 export function addPlacementWarning(
   type: string,
   isValid: (block: Blockly.Block) => boolean,
   message: string,
 ): void {
+  placementRules.set(type, { isValid, message });
   const definition = Blockly.Blocks[type];
   if (!definition) throw new Error(`Block type ${type} is not defined`);
   definition.onchange = function (this: Blockly.BlockSvg) {

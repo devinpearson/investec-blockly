@@ -56,6 +56,10 @@ Date & Time (uses `moment`, in SAST or UTC):
 - `transaction time is between` - a time range, which may cross midnight
 - `transaction time as text` - e.g. `Sat 7 Nov 14:32`
 
+Share: **Copy link** puts a link on the clipboard that opens the current
+workspace — the workspace is packed into the URL fragment, so it never
+reaches a server.
+
 Examples (Open… menu): Default, Petrol Card, Amount, After Hours, Teen Card,
 Travel Mode, Expense Log (Airtable), Make.com Automation and Remote Kill
 Switch. Opening one shows its Guide tab: what the blocks do step by step,
@@ -69,6 +73,97 @@ workspaces; `card event` replaces both.
 
 The before transaction, after transaction and after decline blocks can each be
 used once per workspace.
+
+## Make snippets with Claude or ChatGPT
+
+An AI assistant can write snippets for you and hand them over as a link that
+opens in the editor (`…/#import=…`, the same as the **Copy link** button).
+There are two ways to connect one, and they work together.
+
+### Skill: `skills/investec-card-snippets`
+
+Teaches the assistant the snippet format and every block, using a reference
+generated from the block code (`reference.md`), the examples (`examples/`)
+and `scripts/share_link.py` for links. It needs nothing running.
+
+- **Claude Code:** copy the folder to `~/.claude/skills/` (or `.claude/skills/`
+  in a project).
+- **Claude.ai / Claude Desktop:** zip the folder and upload it under
+  Settings → Capabilities → Skills:
+
+  ```sh
+  cd skills && zip -r investec-card-snippets.zip investec-card-snippets
+  ```
+
+- **ChatGPT:** make a custom GPT with the contents of `SKILL.md` as its
+  instructions and `reference.md` plus a few `examples/*.json` as knowledge
+  files.
+
+After changing blocks, regenerate the reference (a test fails if it is stale):
+
+```sh
+npm run skill:reference
+```
+
+### MCP server: `mcp/`
+
+Runs the editor's own blocks headless in Node, so the assistant can check its
+work instead of guessing. Tools:
+
+| Tool | What it does |
+|---|---|
+| `list_blocks`, `get_block` | The block catalogue, fields, allowed values and placement rules |
+| `list_templates`, `list_examples`, `get_example` | Ready-made rules and complete examples to start from |
+| `check_snippet` | Loads the snippet like the editor does and reports errors and warnings, plus the generated code |
+| `simulate_snippet` | Runs it on investec-card-server (port 3010) with test purchases |
+| `share_snippet` | Returns a link that opens the snippet in the editor |
+| `save_snippet` | Writes a `.json` file for Import (stdio only) |
+
+Build it once:
+
+```sh
+npm install
+npm run build:mcp
+```
+
+**Claude Desktop** (`claude_desktop_config.json`) or any stdio client:
+
+```json
+{
+  "mcpServers": {
+    "investec-blockly": {
+      "command": "node",
+      "args": ["/path/to/investec-blockly/mcp/dist/investec-blockly-mcp.cjs"]
+    }
+  }
+}
+```
+
+**Claude Code:**
+
+```sh
+claude mcp add investec-blockly -- node /path/to/investec-blockly/mcp/dist/investec-blockly-mcp.cjs
+```
+
+**ChatGPT** only connects to remote MCP servers over HTTPS. Start the HTTP
+transport and expose it with a tunnel, then add `https://<tunnel>/mcp` as a
+connector (Settings → Apps & Connectors → Advanced → Developer mode):
+
+```sh
+npm run mcp:http            # http://127.0.0.1:3020/mcp
+cloudflared tunnel --url http://localhost:3020   # or: ngrok http 3020
+```
+
+`simulate_snippet` reaches investec-card-server from wherever the MCP server
+runs, so it works when both run on your machine.
+
+Settings (environment variables): `INVESTEC_BLOCKLY_URL` — the editor share
+links open (default https://investec-blockly.vercel.app/; use
+`http://localhost:5173/` with `npm start`), and `SIMULATOR_URL` — the card
+server (default `http://localhost:3010`).
+
+Test it with `npm run test:mcp` (the simulate test runs when the card server
+is up).
 
 ## Customize configuration
 

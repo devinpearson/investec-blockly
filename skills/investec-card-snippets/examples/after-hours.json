@@ -1,0 +1,87 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "investec_card_before_transaction",
+        "x": 50,
+        "y": 50,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "controls_if",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "investec_time_between",
+                    "fields": {
+                      "START": "22:00",
+                      "END": "06:00",
+                      "ZONE": "120"
+                    }
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "investec_console_log",
+                    "fields": {
+                      "LEVEL": "WARN"
+                    },
+                    "inputs": {
+                      "VALUE": {
+                        "block": {
+                          "type": "text",
+                          "fields": {
+                            "TEXT": "Declined: card used after hours"
+                          }
+                        }
+                      }
+                    },
+                    "next": {
+                      "block": {
+                        "type": "investec_before_transaction_return",
+                        "fields": {
+                          "VALUE": "DECLINE"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "investec_before_transaction_return",
+                  "fields": {
+                    "VALUE": "APPROVE"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "investec_card_after_decline",
+        "x": 50,
+        "y": 300,
+        "inputs": {
+          "CODE": {
+            "block": {
+              "type": "investec_console_log",
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "investec_trans_value",
+                    "fields": {
+                      "AUTH_VALUE": "MERCHANT_NAME"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

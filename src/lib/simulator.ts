@@ -38,10 +38,11 @@ export async function simulate(
   code: string,
   transaction: TransactionInput,
   environmentVariables: EnvironmentVariables = {},
+  baseUrl: string = SIMULATOR_URL,
 ): Promise<ExecutionItem[]> {
   let response: Response;
   try {
-    response = await fetch(`${SIMULATOR_URL}/simulate`, {
+    response = await fetch(`${baseUrl}/simulate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -53,7 +54,7 @@ export async function simulate(
     });
   } catch {
     throw new SimulatorError(
-      `Could not reach the simulator at ${SIMULATOR_URL}. Is investec-card-server running?`,
+      `Could not reach the simulator at ${baseUrl}. Is investec-card-server running?`,
     );
   }
   if (!response.ok) {
